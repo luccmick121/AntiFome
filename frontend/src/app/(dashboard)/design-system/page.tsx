@@ -103,6 +103,7 @@ const docsEntries = [
   "docs/design-system/heroui/overview.md",
   "docs/design-system/heroui/setup-nextjs.md",
   "docs/design-system/heroui/theming-and-tokens.md",
+  "docs/design-system/heroui/all-components.md",
   "docs/design-system/heroui/guidelines.md",
   "docs/design-system/heroui/component-index.md",
   "docs/design-system/heroui/project-mapping.md",
@@ -214,7 +215,7 @@ export default function DesignSystemPage() {
             <div className="grid gap-3 sm:grid-cols-3">
               <HeroFact label="Biblioteca local" value="14 arquivos" />
               <HeroFact label="Categorias mapeadas" value="5 blocos" />
-              <HeroFact label="Wrappers locais" value="10 itens" />
+              <HeroFact label="Catálogo oficial" value="70 componentes" />
             </div>
           </div>
 

@@ -12,16 +12,18 @@ Este material tem dois objetivos:
 1. Comece por [Overview](./overview.md)
 2. Leia [Setup for Next.js](./setup-nextjs.md)
 3. Leia [Theming and Tokens](./theming-and-tokens.md)
-4. Use [Guidelines](./guidelines.md) como regra de design
-5. Consulte [Component Index](./component-index.md) para encontrar componentes rapidamente
-6. Consulte [Project Mapping](./project-mapping.md) para ver o que ja esta adaptado no Antifome RS
-7. Consulte [Official References](./official-references.md) para a origem oficial das regras
+4. Consulte [Full Component Catalog](./all-components.md) para ver o inventario oficial completo
+5. Use [Guidelines](./guidelines.md) como regra de design e escolha
+6. Consulte [Component Index](./component-index.md) para encontrar componentes rapidamente
+7. Consulte [Project Mapping](./project-mapping.md) para ver o que ja esta adaptado no Antifome RS
+8. Consulte [Official References](./official-references.md) para a origem oficial das regras
 
 ## Estrutura
 
 - [Overview](./overview.md)
 - [Setup for Next.js](./setup-nextjs.md)
 - [Theming and Tokens](./theming-and-tokens.md)
+- [Full Component Catalog](./all-components.md)
 - [Guidelines](./guidelines.md)
 - [Component Index](./component-index.md)
 - [Project Mapping](./project-mapping.md)
@@ -40,8 +42,18 @@ Esta biblioteca cobre:
 - a base conceitual do HeroUI
 - a forma correta de instalar e configurar em Next.js
 - theming e customization
-- catalogo dos componentes oficiais mais relevantes do HeroUI atual
+- catalogo oficial completo do HeroUI atual
 - mapeamento entre HeroUI oficial e wrappers locais em `frontend/src/components/ui`
+
+## Inventario oficial consolidado
+
+Em 15 de marco de 2026, o catalogo oficial consolidado nesta biblioteca registra:
+
+- 70 componentes oficiais
+- 15 categorias oficiais
+- 1 catalogo mestre para consulta e decisao de adocao
+
+Use [Full Component Catalog](./all-components.md) como fonte canonica desta biblioteca local.
 
 ## Regra do projeto
 
