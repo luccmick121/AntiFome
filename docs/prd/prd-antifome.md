@@ -83,6 +83,8 @@ O Conselho de Segurança Alimentar e Nutricional do Rio Grande do Sul (CONSEA-RS
 
 **FR19:** O sistema deve enviar **notificações e alertas** para prazos de atualização de documentos, reuniões de conselhos e metas de adesão
 
+**FR20:** O sistema deve possuir **tela de login e autenticação** para controlar o acesso dos perfis internos (gestor estadual, gestor municipal e conselheiro), com redirecionamento conforme permissões
+
 ### Non-Functional Requirements
 
 **NFR1:** A aplicação deve carregar o mapa com todos os 497 municípios em menos de 3 segundos
@@ -104,6 +106,8 @@ O Conselho de Segurança Alimentar e Nutricional do Rio Grande do Sul (CONSEA-RS
 **NFR9:** Controles de acesso baseados em função (RBAC) — perfis com permissões distintas
 
 **NFR10:** Auditoria de atividades — log de ações críticas (cadastro, exclusão, envio de relatórios)
+
+**NFR11:** A autenticação deve manter sessão segura, com proteção de rotas privadas no frontend e validação de credenciais no backend
 
 ### Usuários-Alvo (Personas)
 
@@ -237,7 +241,7 @@ Para o hackathon: smoke test manual. Não é prioridade unit testing no MVP.
 - **GeoJSON estático** dos municípios do RS via IBGE (baixar uma vez, incluir no repo)
 - **Tailwind CSS** para estilização rápida e consistente
 - **shadcn/ui** para componentes (Cards, Tables, Forms, Badge)
-- **Sem autenticação** no MVP — login simulado por seleção de município
+- **Autenticação obrigatória** para áreas internas — tela de login para perfis de gestão e conselho; consulta pública permanece aberta quando aplicável
 - **Dados simulados realistas** para o hackathon — seed com distribuição realista de ativo/atrasado/inativo (71%/17%/12%)
 - **APIs públicas para integração futura:** IBGE (municipios/geometria), Portal da Transparência (orçamento SAN), Dados.gov.br
 - **NestJS modules:** `MunicipiosModule`, `ConselhosModule`, `ReunioesModule`, `MembrosModule`, `DashboardModule`, `MapaModule`
@@ -253,7 +257,7 @@ Para o hackathon: smoke test manual. Não é prioridade unit testing no MVP.
 
 > **Nota:** O GeoJSON do IBGE será importado como arquivo estático no seed (não depender da API em runtime). Qualidade `baixa` para overview, `intermediaria` para zoom.
 
-- **Autenticação MVP:** Sem login formal — seleção de município por dropdown (login simulado por perfis no futuro)
+- **Autenticação MVP:** Tela de login com autenticação por perfil e proteção das rotas internas do sistema; a experiência pública pode permanecer sem login
 
 ---
 
@@ -366,6 +370,22 @@ Para o hackathon: smoke test manual. Não é prioridade unit testing no MVP.
 
 ---
 
+#### Story 1.5: Tela de Login e Autenticação
+
+**As a** usuário interno do sistema,
+**I want** acessar a plataforma por uma tela de login com autenticação,
+**so that** apenas perfis autorizados consigam entrar nas áreas restritas e o sistema aplique permissões corretamente.
+
+**Acceptance Criteria:**
+1. Tela `/login` com campos de credencial e ação de entrar
+2. Backend com endpoint de autenticação para validar credenciais
+3. Sessão persistida com proteção das rotas internas
+4. Redirecionamento pós-login conforme perfil (gestor estadual, gestor municipal, conselheiro)
+5. Mensagem clara para credenciais inválidas
+6. Logout disponível no layout autenticado
+
+---
+
 ### Epic 2: Dashboard do Estado (Visão Macro)
 
 **Objetivo:** Construir a visão executiva do gestor estadual — mapa choropleth real do RS, ranking de municípios por Índice Antifome, e sistema de alertas. O mapa é a peça central: cada município é colorido por status, e o clique navega para o detalhe.
@@ -460,17 +480,18 @@ Para o hackathon: smoke test manual. Não é prioridade unit testing no MVP.
 
 ---
 
-#### Story 3.1: Seleção de Município e Login Simulado
+#### Story 3.1: Login e Acesso ao Portal do Conselho
 
 **As a** conselheiro municipal,
-**I want** selecionar meu município em um dropdown para acessar o portal do meu conselho,
-**so that** eu gerencio as atividades do meu conselho sem complexidade de autenticação no MVP.
+**I want** entrar no sistema com minhas credenciais e acessar o portal do meu município,
+**so that** eu gerencio as atividades do conselho com segurança e permissões adequadas.
 
 **Acceptance Criteria:**
-1. Tela de seleção com dropdown de municípios (searchable)
-2. Ao selecionar → redireciona para `/conselho`
+1. Usuário autenticado acessa `/conselho` apenas se tiver perfil autorizado
+2. Após login, o sistema identifica o município vinculado ao usuário
 3. Header do portal mostra: nome do município, status atual, Índice Antifome
 4. Barra de progresso para o próximo selo (ex: "Faltam 2 reuniões para o selo Bronze")
+5. Tentativas de acesso sem autenticação redirecionam para `/login`
 
 ---
 
@@ -609,8 +630,8 @@ Para o hackathon: smoke test manual. Não é prioridade unit testing no MVP.
 
 | Verificação | Status |
 |-------------|--------|
-| Todos os FR (1-19) cobertos por stories? | ✅ Sim |
-| Todos os NFR (1-10) cobertos? | ✅ Sim |
+| Todos os FR (1-20) cobertos por stories? | ✅ Sim |
+| Todos os NFR (1-11) cobertos? | ✅ Sim |
 | Usuários-alvo definidos? | ✅ 4 personas (Gestor Estadual, Gestor Municipal, Conselheiro, Sociedade Civil) |
 | Critérios de sucesso definidos? | ✅ 8 critérios para o hackathon |
 | Escopo factível em 15h? | ⚠️ Apertado — Epics 3-4 são stretch |
@@ -629,4 +650,4 @@ Para o hackathon: smoke test manual. Não é prioridade unit testing no MVP.
 > "Crie a interface da Plataforma Antifome RS — dashboard governamental com mapa choropleth do RS, sidebar azul escura, KPI cards brancos com sombra. Foco em clareza executiva: gestor vê o mapa e entende a situação em 5 segundos. Paleta: azul #1E3A5F, verde #22C55E, amarelo #F59E0B, vermelho #EF4444. Tipografia Inter. Usar shadcn/ui + Tailwind."
 
 ### Architect Prompt
-> "Projete a arquitetura técnica da Plataforma Antifome RS — Frontend: Next.js 14 App Router + Tailwind + Roboto + shadcn/ui + Leaflet. Backend: NestJS com modules (Municipios, Conselhos, Reuniões, Membros, Dashboard, Mapa, Documentos, Cozinhas, Notificacoes). Banco: Prisma + PostgreSQL. Schema normalizado para multi-estado (estados → municipios → conselhos → CAISAN). Indicadores: Índice Antifome, IAG, status SISAN/COMSEA/CAISAN/Plano SAN, Cozinhas Solidárias, PPSAN. Seed via API do IBGE (497 municípios + GeoJSON). API REST: /api/dashboard/stats, /api/mapa/geojson, /api/municipios, /api/municipios/:id/sisan, /api/municipios/:id/cozinhas, /api/municipios/:id/ppsan, /api/ranking, /api/conselhos/:id/membro, /api/conselhos/:id/reuniao, /api/documentos. RBAC com perfis (gestor-estadual, gestor-municipal, conselheiro, sociedade-civil). LGPD: anonimização de CPFs. Branding: paleta #1A2F23/#B71C1C."
+> "Projete a arquitetura técnica da Plataforma Antifome RS — Frontend: Next.js 14 App Router + Tailwind + Roboto + shadcn/ui + Leaflet. Backend: NestJS com modules (Auth, Municipios, Conselhos, Reuniões, Membros, Dashboard, Mapa, Documentos, Cozinhas, Notificacoes). Banco: Prisma + PostgreSQL. Schema normalizado para multi-estado (estados → municipios → conselhos → CAISAN). Indicadores: Índice Antifome, IAG, status SISAN/COMSEA/CAISAN/Plano SAN, Cozinhas Solidárias, PPSAN. Seed via API do IBGE (497 municípios + GeoJSON). API REST: /api/auth/login, /api/auth/logout, /api/dashboard/stats, /api/mapa/geojson, /api/municipios, /api/municipios/:id/sisan, /api/municipios/:id/cozinhas, /api/municipios/:id/ppsan, /api/ranking, /api/conselhos/:id/membro, /api/conselhos/:id/reuniao, /api/documentos. RBAC com perfis (gestor-estadual, gestor-municipal, conselheiro, sociedade-civil). LGPD: anonimização de CPFs. Branding: paleta #1A2F23/#B71C1C."

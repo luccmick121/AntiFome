@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========================
+// ENUMS
+// ========================
+
+enum StatusMunicipio {
+  ATIVO
+  INATIVO
+  ATRASADO
+}
+
+enum StatusConselho {
+  ATIVO
+  INATIVO
+  SUSPENSO
+}
+
+enum Cargo {
+  PRESIDENTE
+  VICE
+  MEMBRO
+}
+
+enum TipoReuniao {
+  ORDINARIA
+  EXTRAORDINARIA
+}
+
+enum NivelGravidade {
+  BAIXO
+  MODERADO
+  ALTO
+  CRITICO
+}
+
+enum TipoSelo {
+  BRONZE
+  PRATA
+  OURO
+  PLATINA
+}
+
+enum Role {
+  ADMIN
+  GESTOR_ESTADUAL
+  CONSELHEIRO_MUNICIPAL
+}
+
+// ========================
+// MODELS
+// ========================
+
+model Estado {
+  id         String     @id @default(cuid())
+  nome       String
+  sigla      String     @unique
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  municipios Municipio[]
+
+  @@map("estados")
+}
+
+model Municipio {
+  id               String         @id @default(cuid())
+  codigo_ibge      String         @unique
+  nome             String
+  estado_id        String
+  populacao        Int            @default(0)
+  indice_antifome  Float          @default(0)
+  status           StatusMunicipio @default(ATIVO)
+  latitude         Float?
+  longitude        Float?
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+
+  // Relações
+  estado          Estado          @relation(fields: [estado_id], references: [id])
+  conselhos       Conselho[]
+  relatorios      RelatorioFome[]
+  selos           Selo[]
+  usuarios        Usuario[]
+
+  @@index([estado_id])
+  @@index([status])
+  @@index([estado_id, status])
+  @@map("municipios")
+}
+
+model Conselho {
+  id          String        @id @default(cuid())
+  municipio_id String
+  nome        String
+  status      StatusConselho @default(ATIVO)
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+
+  // Relações
+  municipio   Municipio    @relation(fields: [municipio_id], references: [id])
+  membros     Membro[]
+  reunioes    Reuniao[]
+  documentos  Documento[]
+
+  @@index([municipio_id])
+  @@map("conselhos")
+}
+
+model Membro {
+  id          String   @id @default(cuid())
+  conselho_id String
+  nome        String
+  cargo       Cargo
+  email       String?
+  telefone    String?
+  created_at  DateTime @default(now())
+
+  // Relações
+  conselho    Conselho @relation(fields: [conselho_id], references: [id])
+
+  @@index([conselho_id])
+  @@index([conselho_id, cargo])
+  @@map("membros")
+}
+
+model Reuniao {
+  id          String       @id @default(cuid())
+  conselho_id String
+  data        DateTime
+  tipo        TipoReuniao
+  pauta       String?
+  ata_url     String?
+  created_at  DateTime     @default(now())
+
+  // Relações
+  conselho    Conselho @relation(fields: [conselho_id], references: [id])
+
+  @@index([conselho_id])
+  @@index([conselho_id, data(sort: Desc)])
+  @@map("reunioes")
+}
+
+model RelatorioFome {
+  id              String         @id @default(cuid())
+  municipio_id    String
+  mes_ano         String
+  nivel_gravidade NivelGravidade
+  dados_json      String?
+  created_at      DateTime       @default(now())
+
+  // Relações
+  municipio       Municipio @relation(fields: [municipio_id], references: [id])
+
+  @@unique([municipio_id, mes_ano])
+  @@index([municipio_id])
+  @@index([mes_ano])
+  @@map("relatorios_fome")
+}
+
+model Selo {
+  id            String   @id @default(cuid())
+  municipio_id  String
+  tipo          TipoSelo
+  conquistado_em DateTime
+
+  // Relações
+  municipio     Municipio @relation(fields: [municipio_id], references: [id])
+
+  @@index([municipio_id])
+  @@map("selos")
+}
+
+model Usuario {
+  id          String  @id @default(cuid())
+  email       String  @unique
+  senha_hash  String
+  role        Role
+  municipio_id String?
+  created_at  DateTime @default(now())
+
+  // Relações
+  municipio   Municipio? @relation(fields: [municipio_id], references: [id])
+
+  @@index([municipio_id])
+  @@index([role])
+  @@map("usuarios")
+}
+
+model Documento {
+  id           String   @id @default(cuid())
+  conselho_id  String
+  nome         String
+  categoria    String   @default("OUTROS")
+  descricao    String?
+  arquivo_url  String
+  arquivo_tipo String
+  arquivo_tamanho Int    @default(0)
+  criado_por   String?
+  created_at   DateTime @default(now())
+
+  // Relações
+  conselho     Conselho @relation(fields: [conselho_id], references: [id])
+
+  @@index([conselho_id])
+  @@index([conselho_id, categoria])
+  @@map("documentos")
+}
