@@ -232,7 +232,7 @@ Com a base atual pronta, os proximos componentes que mais valem padronizacao loc
 3. `TimeField`
 4. `ComboBox`
 5. `RangeCalendar`
-6. `ScrollShadow`
+6. `Calendar`
 
 ## Guidelines para hackathon
 

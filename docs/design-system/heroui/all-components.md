@@ -85,8 +85,8 @@ Total oficial: 2 componentes
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `Slider` | ajuste por faixa continua | simuladores, pesos, limites e sensibilidade de alertas | uso direto |
-| `Switch` | alternancia booleana | ativar notificacoes, visualizacao, filtros simples | uso direto |
+| `Slider` | ajuste por faixa continua | simuladores, pesos, limites e sensibilidade de alertas | wrapper local pronto |
+| `Switch` | alternancia booleana | ativar notificacoes, visualizacao, filtros simples | wrapper local pronto |
 
 ## Data Display
 
@@ -130,8 +130,8 @@ Total oficial: 16 componentes
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `Checkbox` | selecao booleana individual | aceite, filtros, confirmacoes simples | uso direto |
-| `CheckboxGroup` | varias escolhas no mesmo campo | filtros por categoria, eixo, publico ou status | uso direto |
+| `Checkbox` | selecao booleana individual | aceite, filtros, confirmacoes simples | wrapper local pronto |
+| `CheckboxGroup` | varias escolhas no mesmo campo | filtros por categoria, eixo, publico ou status | wrapper local pronto |
 | `Description` | texto auxiliar de campo | microcopy sob label ou apoio de validacao | uso direto |
 | `ErrorMessage` | mensagem de erro por campo | feedback direto e acionavel em formularios | uso direto |
 | `FieldError` | erro semantico de campo | integracao com validacao formal | uso direto |
@@ -141,8 +141,8 @@ Total oficial: 16 componentes
 | `InputGroup` | combinacao de input com acao ou trigger | busca com botao, prefixo, mascara ou seletor | referencia forte para wrapper futuro |
 | `InputOtp` | codigo multi-campo | autenticacao ou confirmacao em etapas futuras | referencia futura |
 | `Label` | rotulo de campo | sempre que houver formulario formal | wrapper local pronto |
-| `NumberField` | numero controlado | metas, pesos, indices, quantidade de familias | uso direto |
-| `RadioGroup` | escolha unica explicita | comparacao clara entre cenarios ou opcoes | uso direto |
+| `NumberField` | numero controlado | metas, pesos, indices, quantidade de familias | wrapper local pronto |
+| `RadioGroup` | escolha unica explicita | comparacao clara entre cenarios ou opcoes | wrapper local pronto |
 | `SearchField` | busca com semantica dedicada | filtros globais e busca institucional | uso direto |
 | `TextField` | campo textual base | casos avancados de composicao manual | uso direto |
 | `TextArea` | texto longo | atas, pareceres, observacoes e justificativas | wrapper local pronto |
@@ -164,7 +164,7 @@ Total oficial: 1 componente
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `Avatar` | representacao visual de pessoa ou entidade | membros do conselho, responsavel municipal, perfis | uso direto |
+| `Avatar` | representacao visual de pessoa ou entidade | membros do conselho, responsavel municipal, perfis | wrapper local pronto |
 
 ## Navigation
 
@@ -172,11 +172,11 @@ Total oficial: 7 componentes
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `Accordion` | conteudo expansivel | FAQ, detalhamento de criterio, ajuda contextual | uso direto |
+| `Accordion` | conteudo expansivel | FAQ, detalhamento de criterio, ajuda contextual | wrapper local pronto |
 | `Breadcrumbs` | trilha de navegacao | detalhe de municipio, area de documentos, admin | wrapper local pronto |
 | `Disclosure` | painel aberto ou fechado | exibicao sob demanda com controle simples | uso direto |
 | `DisclosureGroup` | grupo de disclosures coordenados | FAQ institucional, secoes tecnicas, ajuda | uso direto |
-| `Link` | navegacao sem semantica de botao | navegacao secundaria, referencias e downloads | uso direto |
+| `Link` | navegacao sem semantica de botao | navegacao secundaria, referencias e downloads | wrapper local pronto |
 | `Pagination` | navegacao por paginas | listas extensas de municipios, docs e eventos | wrapper local pronto |
 | `Tabs` | alternancia entre secoes irmas | status, visoes analiticas, secoes do conselho | wrapper local pronto |
 
@@ -209,7 +209,7 @@ Total oficial: 1 componente
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `Kbd` | representar atalho de teclado | laboratorios internos, documentacao e areas power-user | uso pontual |
+| `Kbd` | representar atalho de teclado | laboratorios internos, documentacao e areas power-user | wrapper local pronto |
 
 ## Utilities
 
@@ -217,7 +217,7 @@ Total oficial: 1 componente
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `ScrollShadow` | sugerir continuidade de rolagem | menus, listas, tabelas estreitas e paineis laterais | uso direto |
+| `ScrollShadow` | sugerir continuidade de rolagem | menus, listas, tabelas estreitas e paineis laterais | wrapper local pronto |
 
 ## Componentes prioritarios para o Antifome RS
 
@@ -238,14 +238,14 @@ Os componentes de maior valor imediato para o produto sao:
 
 ## Proximos wrappers locais prioritarios
 
-Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea`, `Tabs`, `DatePicker`, `DateRangePicker`, `Autocomplete`, `Popover` e `Drawer`, os proximos candidatos naturais sao:
+Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea`, `Tabs`, `DatePicker`, `DateRangePicker`, `Autocomplete`, `Popover`, `Drawer`, `Accordion`, `Avatar`, `Checkbox`, `CheckboxGroup`, `RadioGroup`, `Switch`, `Slider`, `NumberField`, `Link`, `Kbd` e `ScrollShadow`, os proximos candidatos naturais sao:
 
 1. `Separator`
 2. `DateField`
 3. `TimeField`
 4. `ComboBox`
 5. `RangeCalendar`
-6. `ScrollShadow`
+6. `Calendar`
 
 ## Componentes de baixa prioridade no produto atual
 

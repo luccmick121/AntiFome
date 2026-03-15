@@ -45,6 +45,21 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 | `DateRangePicker` | `DateRangePicker` | pronto |
 | `Popover` | `Popover` | pronto |
 | `Drawer` | `Drawer` | pronto |
+| `Accordion` | `Accordion` | pronto |
+| `Avatar` | `Avatar` | pronto |
+| `Checkbox` | `Checkbox` | pronto |
+| `CheckboxGroup` | `CheckboxGroup` | pronto |
+| `RadioGroup` | `RadioGroup` | pronto |
+| `Switch` | `Switch` | pronto |
+| `Slider` | `Slider` | pronto |
+| `NumberInput` | `NumberInput` | pronto |
+| `Link` | `Link` | pronto |
+| `CircularProgress` | `CircularProgress` | pronto |
+| `ScrollShadow` | `ScrollShadow` | pronto |
+| `Code` | `Code` | pronto |
+| `Kbd` | `Kbd` | pronto |
+| `Image` | `Image` | pronto |
+| `User` | `User` | pronto |
 | `Alert` | composicao local | pronto |
 | `AlertBanner` | composicao local | pronto |
 | `Label` | local | pronto |
@@ -78,6 +93,7 @@ Boas candidatas no projeto:
 - `TimeField`
 - `ComboBox`
 - `RangeCalendar`
+- `Calendar`
 
 ### Nao existe wrapper local e o uso e pontual
 
@@ -162,7 +178,7 @@ Os proximos wrappers mais valiosos para o projeto sao:
 3. `TimeField`
 4. `ComboBox`
 5. `RangeCalendar`
-6. `ScrollShadow`
+6. `Calendar`
 
 ## Leitura por categoria oficial
 

@@ -1,13 +1,18 @@
 "use client";
 
 import { type ComponentType, useMemo, useState } from "react";
+import { Accordion, AccordionItem } from "@/components/ui/accordion";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Autocomplete, AutocompleteItem } from "@/components/ui/autocomplete";
+import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BreadcrumbItem, Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox, CheckboxGroup } from "@/components/ui/checkbox";
+import { CircularProgress } from "@/components/ui/circular-progress";
+import { Code } from "@/components/ui/code";
 import { DatePicker, DateRangePicker } from "@/components/ui/date-picker";
 import { Divider } from "@/components/ui/divider";
 import {
@@ -21,19 +26,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from "@/components/ui/drawer";
+import { Image } from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
+import { Link } from "@/components/ui/link";
+import { NumberInput } from "@/components/ui/number-input";
 import { Pagination } from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
+import { Radio, RadioGroup } from "@/components/ui/radio-group";
+import { ScrollShadow } from "@/components/ui/scroll-shadow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectItem } from "@/components/ui/select";
 import { Snippet } from "@/components/ui/snippet";
+import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, Tab } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
 import { Tooltip } from "@/components/ui/tooltip";
+import { User } from "@/components/ui/user";
 import {
   colorTokens,
   componentPatterns,
@@ -122,6 +136,21 @@ const wrapperRows = [
   { name: "DateRangePicker", base: "HeroUI DateRangePicker", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Popover", base: "HeroUI Popover", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Drawer", base: "HeroUI Drawer", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Accordion", base: "HeroUI Accordion", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Avatar", base: "HeroUI Avatar", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Checkbox", base: "HeroUI Checkbox", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "CheckboxGroup", base: "HeroUI CheckboxGroup", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "RadioGroup", base: "HeroUI RadioGroup", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Switch", base: "HeroUI Switch", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Slider", base: "HeroUI Slider", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "NumberInput", base: "HeroUI NumberInput", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Link", base: "HeroUI Link", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "CircularProgress", base: "HeroUI CircularProgress", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "ScrollShadow", base: "HeroUI ScrollShadow", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Code", base: "HeroUI Code", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Kbd", base: "HeroUI Kbd", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Image", base: "HeroUI Image", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "User", base: "HeroUI User", status: "Wrapper pronto", tone: "success" as Tone },
 ];
 
 const docsEntries = [
@@ -305,7 +334,7 @@ export default function DesignSystemPage() {
               <HeroFact label="Biblioteca local" value="14 arquivos" />
               <HeroFact label="Categorias mapeadas" value="5 blocos" />
               <HeroFact label="Catálogo oficial" value="70 componentes" />
-              <HeroFact label="Wrappers locais" value="26 itens" />
+              <HeroFact label="Wrappers locais" value="42 itens" />
             </div>
           </div>
 
@@ -696,6 +725,89 @@ export default function DesignSystemPage() {
                 </DrawerFooter>
               </DrawerContent>
             </Drawer>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="rounded-lg border border-default-200 bg-[#F8FAFC] p-4">
+                <p className="text-sm font-medium text-foreground">Identidade e pessoas</p>
+                <div className="mt-4 flex items-center gap-4">
+                  <Avatar name="Consea" className="bg-primary/10 text-primary" />
+                  <User
+                    name="Gestor estadual"
+                    description="coordenação de monitoramento"
+                    avatarProps={{ name: "GE", className: "bg-success/10 text-success" }}
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-default-200 bg-[#F8FAFC] p-4">
+                <p className="text-sm font-medium text-foreground">Feedback denso</p>
+                <div className="mt-4 flex items-center justify-between gap-4">
+                  <CircularProgress value={78} showValueLabel color="success" aria-label="Aderência institucional" />
+                  <div className="space-y-2">
+                    <Code color="success">pnpm -C frontend lint</Code>
+                    <p className="text-sm text-foreground-500">
+                      Atalho rápido <Kbd keys={["command"]}>K</Kbd>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-default-200 bg-[#F8FAFC] p-4">
+                <p className="text-sm font-medium text-foreground">Referência visual</p>
+                <div className="mt-4 space-y-3">
+                  <Image
+                    alt="Mapa conceitual de governança"
+                    src="https://images.unsplash.com/photo-1526779259212-939e64788e3c?auto=format&fit=crop&w=800&q=80"
+                    className="h-28 w-full object-cover"
+                  />
+                  <Link href="https://www.heroui.com/docs/guide/introduction" target="_blank">
+                    Abrir referência oficial do HeroUI
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div className="rounded-lg border border-default-200 bg-[#F8FAFC] p-4">
+                <p className="text-sm font-medium text-foreground">Seleção e controle</p>
+                <div className="mt-4 space-y-4">
+                  <CheckboxGroup label="Eixos prioritários" orientation="horizontal" defaultValue={["cadastro", "selo"]}>
+                    <Checkbox value="cadastro">Cadastro</Checkbox>
+                    <Checkbox value="selo">Selo</Checkbox>
+                    <Checkbox value="reunioes">Reuniões</Checkbox>
+                  </CheckboxGroup>
+                  <RadioGroup label="Ritmo de resposta" orientation="horizontal" defaultValue="tatico">
+                    <Radio value="imediato">Imediato</Radio>
+                    <Radio value="tatico">Tático</Radio>
+                    <Radio value="estrategico">Estratégico</Radio>
+                  </RadioGroup>
+                  <Switch defaultSelected>Notificar coordenação estadual</Switch>
+                  <Slider label="Sensibilidade do alerta" defaultValue={65} showTooltip color="warning" />
+                  <NumberInput label="Meta de reuniões" defaultValue={12} minValue={0} />
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-default-200 bg-[#F8FAFC] p-4">
+                <p className="text-sm font-medium text-foreground">Leitura progressiva</p>
+                <div className="mt-4 space-y-4">
+                  <Accordion selectionMode="multiple" variant="splitted">
+                    <AccordionItem key="1" aria-label="Critério 1" title="Quando usar Accordion">
+                      Use para densidade alta com leitura sob demanda, como regras, critérios e guias técnicos.
+                    </AccordionItem>
+                    <AccordionItem key="2" aria-label="Critério 2" title="Quando usar ScrollShadow">
+                      Use para listas, menus e painéis onde a continuidade da rolagem precisa ficar óbvia.
+                    </AccordionItem>
+                  </Accordion>
+                  <ScrollShadow className="h-28 rounded-lg border border-default-200 bg-white p-3">
+                    <div className="space-y-3 text-sm text-foreground-500">
+                      {Array.from({ length: 8 }).map((_, index) => (
+                        <p key={index}>Item técnico {index + 1} da biblioteca local do design system.</p>
+                      ))}
+                    </div>
+                  </ScrollShadow>
+                </div>
+              </div>
+            </div>
 
             <Tabs
               aria-label="Exemplo de abas do design system"
