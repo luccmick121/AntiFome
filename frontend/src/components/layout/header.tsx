@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/auth-context";
 import { Bell, LogOut, Menu, ShieldCheck, User } from "lucide-react";
 
@@ -33,13 +34,13 @@ export function Header({ onToggleSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="border-b border-default-200 bg-white/90 backdrop-blur-sm">
+    <header className="border-b border-default-200 bg-white shadow-[0_1px_0_rgba(16,24,40,0.05)]">
       <div className="page-shell flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between md:py-5">
         <div className="flex items-start gap-4">
           <button
             onClick={onToggleSidebar}
             aria-label="Abrir navegação lateral"
-            className="rounded-md border border-default-200 bg-content1 p-2 text-foreground shadow-panel-sm lg:hidden"
+            className="rounded-md border border-default-200 bg-white p-2 text-foreground shadow-panel-sm lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -61,16 +62,18 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           <Badge
             variant="success"
             startContent={<ShieldCheck className="h-4 w-4" />}
-            className="border border-success/20 bg-success/10 text-success"
+            className="border border-success/20 bg-success/10 text-success shadow-none"
           >
             Ambiente interno seguro
           </Badge>
 
-          <Button aria-label="Abrir notificações" variant="outline" size="sm" className="bg-white">
-            <Bell className="h-4 w-4" />
-          </Button>
+          <Tooltip content="Central de notificações do monitoramento estadual">
+            <Button aria-label="Abrir notificações" variant="outline" size="sm" className="bg-white shadow-none">
+              <Bell className="h-4 w-4" />
+            </Button>
+          </Tooltip>
 
-          <div className="flex items-center gap-3 rounded-md border border-default-200 bg-content1 px-3 py-2 shadow-panel-sm">
+          <div className="flex items-center gap-3 rounded-md border border-default-200 bg-white px-3 py-2 shadow-panel-sm">
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
               <User className="h-5 w-5" />
             </div>
@@ -80,9 +83,11 @@ export function Header({ onToggleSidebar }: HeaderProps) {
                 {usuario?.role ?? "Usuário"}
               </p>
             </div>
-            <Button aria-label="Sair da plataforma" variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <Tooltip content="Encerrar sessão">
+              <Button aria-label="Sair da plataforma" variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </div>

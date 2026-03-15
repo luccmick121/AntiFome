@@ -35,6 +35,11 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 | `Textarea` | `Textarea` | pronto |
 | `Tabs` | `Tabs` | pronto |
 | `Pagination` | `Pagination` | pronto |
+| `Divider` | `Divider` | pronto |
+| `Snippet` | `Snippet` | pronto |
+| `Spinner` | `Spinner` | pronto |
+| `Tooltip` | `Tooltip` | pronto |
+| `Breadcrumbs` | `Breadcrumbs` | pronto |
 | `Alert` | composicao local | pronto |
 | `AlertBanner` | composicao local | pronto |
 | `Label` | local | pronto |
@@ -44,7 +49,6 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 Encontrado no projeto:
 
 - `HeroUIProvider`
-- `Divider`
 - `Chip`
 
 ## Regras de adocao
@@ -64,10 +68,11 @@ Crie wrapper.
 
 Boas candidatas no projeto:
 
-- `Divider`
-- `Tooltip`
 - `DatePicker`
 - `Drawer`
+- `Autocomplete`
+- `DateRangePicker`
+- `Popover`
 
 ### Nao existe wrapper local e o uso e pontual
 
@@ -147,12 +152,12 @@ Wrappers locais ja embutem:
 
 Os proximos wrappers mais valiosos para o projeto sao:
 
-1. `Tooltip`
-2. `DatePicker`
-3. `Drawer`
-4. `Autocomplete`
-5. `Breadcrumbs`
-6. `Spinner`
+1. `DatePicker`
+2. `Drawer`
+3. `Autocomplete`
+4. `DateRangePicker`
+5. `Popover`
+6. `Separator`
 
 ## Leitura por categoria oficial
 

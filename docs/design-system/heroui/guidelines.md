@@ -227,12 +227,12 @@ Nao banalize `danger`.
 
 Com a base atual pronta, os proximos componentes que mais valem padronizacao local sao:
 
-1. `Tooltip`
-2. `DatePicker`
-3. `Drawer`
-4. `Autocomplete`
-5. `Breadcrumbs`
-6. `Spinner`
+1. `DatePicker`
+2. `Drawer`
+3. `Autocomplete`
+4. `DateRangePicker`
+5. `Popover`
+6. `Separator`
 
 ## Guidelines para hackathon
 

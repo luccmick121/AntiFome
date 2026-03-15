@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Spinner } from "@heroui/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Select, SelectItem } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/ui/table";
 import { buildApiPath } from "@/lib/api";
 import { Search, Trophy } from "lucide-react";

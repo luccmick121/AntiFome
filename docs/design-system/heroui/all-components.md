@@ -122,7 +122,7 @@ Total oficial: 6 componentes
 | `ProgressBar` | progresso linear | onboarding, upload, adesao ao SISAN, metas | wrapper local pronto |
 | `ProgressCircle` | progresso radial | cards compactos de KPI e resumo executivo | uso direto |
 | `Skeleton` | placeholder de carregamento | dashboards, listas e mapa durante fetch | preferir wrapper local |
-| `Spinner` | estado de espera curto | botao carregando, bloco leve, refresh pontual | uso direto |
+| `Spinner` | estado de espera curto | botao carregando, bloco leve, refresh pontual | wrapper local pronto |
 
 ## Forms
 
@@ -173,7 +173,7 @@ Total oficial: 7 componentes
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
 | `Accordion` | conteudo expansivel | FAQ, detalhamento de criterio, ajuda contextual | uso direto |
-| `Breadcrumbs` | trilha de navegacao | detalhe de municipio, area de documentos, admin | uso direto |
+| `Breadcrumbs` | trilha de navegacao | detalhe de municipio, area de documentos, admin | wrapper local pronto |
 | `Disclosure` | painel aberto ou fechado | exibicao sob demanda com controle simples | uso direto |
 | `DisclosureGroup` | grupo de disclosures coordenados | FAQ institucional, secoes tecnicas, ajuda | uso direto |
 | `Link` | navegacao sem semantica de botao | navegacao secundaria, referencias e downloads | uso direto |
@@ -191,7 +191,7 @@ Total oficial: 6 componentes
 | `Modal` | janela sobreposta principal | confirmacao, formulario curto, detalhe rapido | preferir wrapper local `Dialog` |
 | `Popover` | contexto curto ancorado | dicas, acoes compactas, preview de item | uso direto |
 | `Toast` | feedback efemero | sucesso, erro, aviso e conclusao de fluxo | preferir wrapper local `useToast` |
-| `Tooltip` | dica breve suplementar | icones, siglas, metrica sem explicacao completa | uso direto |
+| `Tooltip` | dica breve suplementar | icones, siglas, metrica sem explicacao completa | wrapper local pronto |
 
 ## Pickers
 
@@ -240,12 +240,12 @@ Os componentes de maior valor imediato para o produto sao:
 
 Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea` e `Tabs`, os proximos candidatos naturais sao:
 
-1. `Tooltip`
-2. `DatePicker`
-3. `Drawer`
-4. `Autocomplete`
-5. `Breadcrumbs`
-6. `Spinner`
+1. `DatePicker`
+2. `Drawer`
+3. `Autocomplete`
+4. `DateRangePicker`
+5. `Popover`
+6. `Separator`
 
 ## Componentes de baixa prioridade no produto atual
 
