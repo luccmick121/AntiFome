@@ -34,6 +34,7 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 | `Table` | `Table` | pronto |
 | `Textarea` | `Textarea` | pronto |
 | `Tabs` | `Tabs` | pronto |
+| `Pagination` | `Pagination` | pronto |
 | `Alert` | composicao local | pronto |
 | `AlertBanner` | composicao local | pronto |
 | `Label` | local | pronto |
@@ -150,8 +151,8 @@ Os proximos wrappers mais valiosos para o projeto sao:
 2. `DatePicker`
 3. `Drawer`
 4. `Autocomplete`
-5. `Pagination`
-6. `Breadcrumbs`
+5. `Breadcrumbs`
+6. `Spinner`
 
 ## Leitura por categoria oficial
 

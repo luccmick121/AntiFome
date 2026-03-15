@@ -1,17 +1,31 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
+import { usePathname, useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, User } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
+import { Bell, LogOut, Menu, ShieldCheck, User } from "lucide-react";
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
 }
 
+const titles: Record<string, string> = {
+  "/": "Dashboard Executivo",
+  "/dashboard": "Dashboard Executivo",
+  "/mapa": "Mapa Interativo do RS",
+  "/ranking": "Ranking de Municípios",
+  "/alertas": "Alertas de Inatividade",
+  "/gestao": "Gestão CONSEA",
+  "/design-system": "Design System Antifome RS",
+};
+
 export function Header({ onToggleSidebar }: HeaderProps) {
+  const pathname = usePathname();
   const router = useRouter();
   const { usuario, logout } = useAuth();
+
+  const title = titles[pathname] ?? "Plataforma Antifome RS";
 
   const handleLogout = async () => {
     await logout();
@@ -19,44 +33,58 @@ export function Header({ onToggleSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 shadow-sm">
-      <div className="flex items-center gap-4">
-        {/* Botão hamburger para mobile */}
-        <button
-          onClick={onToggleSidebar}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+    <header className="border-b border-default-200 bg-white/90 backdrop-blur-sm">
+      <div className="page-shell flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between md:py-5">
+        <div className="flex items-start gap-4">
+          <button
+            onClick={onToggleSidebar}
+            aria-label="Abrir navegação lateral"
+            className="rounded-md border border-default-200 bg-content1 p-2 text-foreground shadow-panel-sm lg:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
-        {/* Breadcrumb ou título da página */}
-        <h1 className="text-lg font-semibold text-gray-800">
-          Sistema de Gestão da Segurança Alimentar
-        </h1>
-      </div>
-
-      <div className="flex items-center gap-4">
-        {/* Info do usuário */}
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-            <User className="w-4 h-4 text-green-600" />
-          </div>
-          <div className="hidden sm:block">
-            <p className="font-medium text-gray-800">{usuario?.email}</p>
-            <p className="text-xs text-gray-500">{usuario?.role}</p>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-foreground-500">
+              Monitoramento estadual
+            </p>
+            <h1 className="mt-1 font-display text-2xl font-semibold text-foreground md:text-3xl">
+              {title}
+            </h1>
+            <p className="mt-1 max-w-2xl text-sm text-foreground-500">
+              Segurança alimentar com leitura executiva, evidência territorial e governança contínua.
+            </p>
           </div>
         </div>
 
-        {/* Botão de logout */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLogout}
-          className="gap-2"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="hidden sm:inline">Sair</span>
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge
+            variant="success"
+            startContent={<ShieldCheck className="h-4 w-4" />}
+            className="border border-success/20 bg-success/10 text-success"
+          >
+            Ambiente interno seguro
+          </Badge>
+
+          <Button aria-label="Abrir notificações" variant="outline" size="sm" className="bg-white">
+            <Bell className="h-4 w-4" />
+          </Button>
+
+          <div className="flex items-center gap-3 rounded-md border border-default-200 bg-content1 px-3 py-2 shadow-panel-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <User className="h-5 w-5" />
+            </div>
+            <div className="hidden min-w-[180px] sm:block">
+              <p className="truncate text-sm font-medium text-foreground">{usuario?.email}</p>
+              <p className="text-xs uppercase tracking-[0.12em] text-foreground-500">
+                {usuario?.role ?? "Usuário"}
+              </p>
+            </div>
+            <Button aria-label="Sair da plataforma" variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
     </header>
   );

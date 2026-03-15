@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectItem } from "@/components/ui/select";
@@ -102,6 +103,7 @@ const wrapperRows = [
   { name: "Table", base: "HeroUI Table", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Textarea", base: "HeroUI Textarea", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Tabs", base: "HeroUI Tabs", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Pagination", base: "HeroUI Pagination", status: "Wrapper pronto", tone: "success" as Tone },
 ];
 
 const docsEntries = [
@@ -419,7 +421,12 @@ export default function DesignSystemPage() {
                   Progresso de adesão ao SISAN
                 </p>
                 <p className="mt-3 font-display text-3xl font-semibold text-foreground">74%</p>
-                <Progress value={74} color="success" className="mt-4" />
+                <Progress
+                  value={74}
+                  color="success"
+                  className="mt-4"
+                  aria-label="Meta de adesão ao SISAN"
+                />
               </div>
 
               <div className="flex items-end gap-3">
@@ -461,6 +468,10 @@ export default function DesignSystemPage() {
               <Skeleton className="h-24 w-full" />
               <Skeleton className="h-24 w-full" />
               <Skeleton className="h-24 w-full" />
+            </div>
+
+            <div className="flex justify-center rounded-md border border-default-100 bg-content2 p-4">
+              <Pagination page={2} total={6} color="primary" />
             </div>
 
             <Tabs

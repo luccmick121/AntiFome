@@ -177,7 +177,7 @@ Total oficial: 7 componentes
 | `Disclosure` | painel aberto ou fechado | exibicao sob demanda com controle simples | uso direto |
 | `DisclosureGroup` | grupo de disclosures coordenados | FAQ institucional, secoes tecnicas, ajuda | uso direto |
 | `Link` | navegacao sem semantica de botao | navegacao secundaria, referencias e downloads | uso direto |
-| `Pagination` | navegacao por paginas | listas extensas de municipios, docs e eventos | uso direto |
+| `Pagination` | navegacao por paginas | listas extensas de municipios, docs e eventos | wrapper local pronto |
 | `Tabs` | alternancia entre secoes irmas | status, visoes analiticas, secoes do conselho | wrapper local pronto |
 
 ## Overlays
@@ -244,8 +244,8 @@ Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea` e
 2. `DatePicker`
 3. `Drawer`
 4. `Autocomplete`
-5. `Pagination`
-6. `Breadcrumbs`
+5. `Breadcrumbs`
+6. `Spinner`
 
 ## Componentes de baixa prioridade no produto atual
 

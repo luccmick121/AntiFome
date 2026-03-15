@@ -231,8 +231,8 @@ Com a base atual pronta, os proximos componentes que mais valem padronizacao loc
 2. `DatePicker`
 3. `Drawer`
 4. `Autocomplete`
-5. `Pagination`
-6. `Breadcrumbs`
+5. `Breadcrumbs`
+6. `Spinner`
 
 ## Guidelines para hackathon
 

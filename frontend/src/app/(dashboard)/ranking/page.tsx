@@ -2,14 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Pagination,
-  Spinner,
-} from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Pagination } from "@/components/ui/pagination";
 import { Select, SelectItem } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/ui/table";
 import { buildApiPath } from "@/lib/api";
@@ -197,7 +195,6 @@ export default function RankingPage() {
                 total={data.totalPages}
                 onChange={setPage}
                 color="primary"
-                radius="sm"
               />
             </div>
           ) : null}
