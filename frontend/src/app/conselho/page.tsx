@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Users, Calendar, Award, TrendingUp } from 'lucide-react';
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Calendar, TrendingUp, Users, Award } from "lucide-react";
 
 interface ConselhoStats {
   totalMembros: number;
@@ -14,6 +16,13 @@ interface ConselhoStats {
   reunioesFaltando: number;
 }
 
+const seloVariantMap: Record<string, "success" | "warning" | "outline"> = {
+  PLATINA: "success",
+  OURO: "success",
+  PRATA: "warning",
+  BRONZE: "outline",
+};
+
 export default function ConselhoHomePage() {
   const [stats, setStats] = useState<ConselhoStats | null>(null);
   const [carregando, setCarregando] = useState(true);
@@ -21,201 +30,144 @@ export default function ConselhoHomePage() {
   useEffect(() => {
     async function carregarStats() {
       try {
-        const res = await fetch('/api/conselhos/stats');
+        const res = await fetch("/api/conselhos/mine/stats");
+
         if (res.ok) {
           const data = await res.json();
           setStats(data);
         }
       } catch (erro) {
-        console.error('Erro ao carregar estatísticas:', erro);
+        console.error("Erro ao carregar estatísticas:", erro);
       } finally {
         setCarregando(false);
       }
     }
+
     carregarStats();
   }, []);
 
-  if (carregando) {
-    return (
-      <div className="space-y-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="animate-pulse space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  <div className="h-8 bg-gray-200 rounded w-3/4" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const getSeloCor = (selo: string | null) => {
-    switch (selo) {
-      case 'PLATINA':
-        return 'bg-purple-100 text-purple-800';
-      case 'OURO':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'PRATA':
-        return 'bg-gray-100 text-gray-800';
-      case 'BRONZE':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-50 text-gray-500';
-    }
-  };
+  const cards = [
+    {
+      title: "Membros ativos",
+      value: stats?.totalMembros ?? 0,
+      icon: Users,
+      description: "Equipe oficialmente cadastrada",
+    },
+    {
+      title: "Reuniões realizadas",
+      value: stats?.totalReunioes ?? 0,
+      icon: Calendar,
+      description: "Histórico operacional registrado",
+    },
+    {
+      title: "Progresso do próximo selo",
+      value: `${stats?.progressoProximoSelo ?? 0}%`,
+      icon: TrendingUp,
+      description: `${stats?.reunioesFaltando ?? 0} reuniões restantes`,
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-[#1A2F23]">Painel do Conselho</h2>
-        <p className="text-gray-500">Visão geral das atividades do seu conselho</p>
+      <div className="space-y-2">
+        <h2 className="font-display text-3xl font-semibold text-foreground">Painel do conselho</h2>
+        <p className="text-foreground-500">
+          Acompanhe atividade institucional, progresso do selo e próximos passos do município.
+        </p>
       </div>
 
-      {/* Cards de Estatísticas */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">
-              Membros
-            </CardTitle>
-            <Users className="h-4 w-4 text-[#1A2F23]" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[#1A2F23]">
-              {stats?.totalMembros || 0}
-            </div>
-            <p className="text-xs text-gray-500">ativos no conselho</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 lg:grid-cols-3">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">
-              Reuniões
-            </CardTitle>
-            <Calendar className="h-4 w-4 text-[#1A2F23]" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[#1A2F23]">
-              {stats?.totalReunioes || 0}
-            </div>
-            <p className="text-xs text-gray-500">realizadas</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">
-              Selo Atual
-            </CardTitle>
-            <Award className="h-4 w-4 text-[#1A2F23]" />
-          </CardHeader>
-          <CardContent>
-            <Badge className={getSeloCor(stats?.seloAtual || null)}>
-              {stats?.seloAtual || 'Sem selo'}
-            </Badge>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">
-              Próximo Selo
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-[#1A2F23]" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[#1A2F23]">
-              {stats?.progressoProximoSelo || 0}%
-            </div>
-            <p className="text-xs text-gray-500">
-              {stats?.reunioesFaltando || 0} reuniões restantes
-            </p>
-          </CardContent>
-        </Card>
+          return (
+            <Card key={card.title}>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm uppercase tracking-[0.12em] text-foreground-500">{card.title}</p>
+                  <div className="rounded-md bg-primary/10 p-2 text-primary">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                </div>
+                <p className="font-display text-4xl font-semibold text-foreground">
+                  {carregando ? "—" : card.value}
+                </p>
+                <p className="text-sm text-foreground-500">{card.description}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      {/* Barra de Progresso do Selo */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Progresso para o Próximo Selo</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Progresso</span>
-              <span>{stats?.progressoProximoSelo || 0}%</span>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
+        <Card>
+          <CardHeader>
+            <CardTitle>Progresso institucional</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.12em] text-foreground-500">Selo atual</p>
+                <div className="mt-2 flex items-center gap-3">
+                  <Award className="h-5 w-5 text-primary" />
+                  <Badge variant={seloVariantMap[stats?.seloAtual ?? ""] ?? "outline"}>
+                    {stats?.seloAtual ?? "Sem selo"}
+                  </Badge>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm uppercase tracking-[0.12em] text-foreground-500">Meta seguinte</p>
+                <p className="mt-2 font-display text-3xl font-semibold text-foreground">
+                  {stats?.progressoProximoSelo ?? 0}%
+                </p>
+              </div>
             </div>
-            <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#2E7D32] transition-all duration-500"
-                style={{ width: `${stats?.progressoProximoSelo || 0}%` }}
-              />
-            </div>
-            <p className="text-sm text-gray-500">
+            <Progress
+              value={stats?.progressoProximoSelo ?? 0}
+              color="success"
+              label="Evolução rumo ao próximo selo"
+              showValueLabel
+            />
+            <p className="text-sm text-foreground-500">
               {stats?.reunioesFaltando
-                ? `Faltam ${stats.reunioesFaltando} reuniões para o próximo selo`
-                : 'Continue realizando reuniões regulares para conquistar selos!'}
+                ? `Faltam ${stats.reunioesFaltando} reuniões para avançar ao próximo patamar.`
+                : "Cadência operacional dentro do esperado para a próxima certificação."}
             </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Ações Rápidas */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Ações Rápidas</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <a
-              href="/conselho/reunioes"
-              className="block p-3 rounded-lg border hover:bg-gray-50 transition-colors"
-            >
-              <div className="font-medium text-[#1A2F23]">Registrar Reunião</div>
-              <div className="text-sm text-gray-500">
-                Adicionar nova reunião realizada
-              </div>
-            </a>
-            <a
-              href="/conselho/membros"
-              className="block p-3 rounded-lg border hover:bg-gray-50 transition-colors"
-            >
-              <div className="font-medium text-[#1A2F23]">Gerenciar Membros</div>
-              <div className="text-sm text-gray-500">
-                Adicionar ou editar membros do conselho
-              </div>
-            </a>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Próxima Reunião</CardTitle>
+            <CardTitle>Ações prioritárias</CardTitle>
           </CardHeader>
-          <CardContent>
-            {stats?.proximaReuniao ? (
-              <div className="text-center py-4">
-                <Calendar className="h-12 w-12 text-[#1A2F23] mx-auto mb-2" />
-                <p className="font-medium">{stats.proximaReuniao}</p>
-              </div>
-            ) : (
-              <div className="text-center py-4 text-gray-500">
-                <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p>Nenhuma reunião agendada</p>
-                <a
-                  href="/conselho/reunioes"
-                  className="text-[#1A2F23] hover:underline text-sm"
-                >
-                  Agendar reunião
-                </a>
-              </div>
-            )}
+          <CardContent className="space-y-3">
+            <Link
+              href="/conselho/reunioes"
+              className="block rounded-md border border-default-100 bg-content2 p-4 transition-colors hover:bg-content3"
+            >
+              <p className="font-medium text-foreground">Registrar reunião</p>
+              <p className="mt-1 text-sm text-foreground-500">
+                Atualize pauta, presença e ata para manter o conselho ativo.
+              </p>
+            </Link>
+            <Link
+              href="/conselho/membros"
+              className="block rounded-md border border-default-100 bg-content2 p-4 transition-colors hover:bg-content3"
+            >
+              <p className="font-medium text-foreground">Gerenciar membros</p>
+              <p className="mt-1 text-sm text-foreground-500">
+                Garanta composição atualizada e contatos válidos.
+              </p>
+            </Link>
+            <Link
+              href="/conselho/documentos"
+              className="block rounded-md border border-default-100 bg-content2 p-4 transition-colors hover:bg-content3"
+            >
+              <p className="font-medium text-foreground">Revisar documentos</p>
+              <p className="mt-1 text-sm text-foreground-500">
+                Centralize atas, modelos e evidências de conformidade.
+              </p>
+            </Link>
           </CardContent>
         </Card>
       </div>

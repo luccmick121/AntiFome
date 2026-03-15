@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tab, Tabs } from '@/components/ui/tabs';
 import {
   Target,
   Users,
@@ -124,35 +125,26 @@ export default function GestaoConseaPage() {
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 border-b">
-        {[
-          { id: 'missao', label: 'Missão', icone: Target },
-          { id: 'contato', label: 'Contato', icone: Phone },
-          { id: 'guia', label: 'Guia de Criação', icone: BookOpen },
-          { id: 'links', label: 'Links Úteis', icone: ExternalLink },
-        ].map((tab) => {
-          const Icon = tab.icone;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setAbaAtiva(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                abaAtiva === tab.id
-                  ? 'border-[#1A2F23] text-[#1A2F23]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tab Content */}
-      {abaAtiva === 'missao' && (
-        <div className="space-y-6">
+      <Tabs
+        aria-label="Seções da gestão CONSEA"
+        selectedKey={abaAtiva}
+        onSelectionChange={(key) => setAbaAtiva(String(key))}
+        classNames={{
+          tabList: 'border-default-200 bg-white',
+          tabContent: 'flex items-center gap-2',
+          panel: 'pt-6',
+        }}
+      >
+        <Tab
+          key="missao"
+          title={
+            <>
+              <Target className="h-4 w-4" />
+              <span>Missão</span>
+            </>
+          }
+        >
+          <div className="space-y-6">
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -178,11 +170,19 @@ export default function GestaoConseaPage() {
               </ul>
             </CardContent>
           </Card>
-        </div>
-      )}
+          </div>
+        </Tab>
 
-      {abaAtiva === 'contato' && (
-        <div className="grid md:grid-cols-2 gap-6">
+        <Tab
+          key="contato"
+          title={
+            <>
+              <Phone className="h-4 w-4" />
+              <span>Contato</span>
+            </>
+          }
+        >
+          <div className="grid md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Informações de Contato</CardTitle>
@@ -236,11 +236,19 @@ export default function GestaoConseaPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+          </div>
+        </Tab>
 
-      {abaAtiva === 'guia' && (
-        <div className="space-y-4">
+        <Tab
+          key="guia"
+          title={
+            <>
+              <BookOpen className="h-4 w-4" />
+              <span>Guia de Criação</span>
+            </>
+          }
+        >
+          <div className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Como Criar um Conselho Municipal de SAN</CardTitle>
@@ -289,11 +297,19 @@ export default function GestaoConseaPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+          </div>
+        </Tab>
 
-      {abaAtiva === 'links' && (
-        <div className="space-y-4">
+        <Tab
+          key="links"
+          title={
+            <>
+              <ExternalLink className="h-4 w-4" />
+              <span>Links Úteis</span>
+            </>
+          }
+        >
+          <div className="space-y-4">
           {LINKS_UTEIS.map((categoria) => (
             <Card key={categoria.categoria}>
               <CardHeader>
@@ -317,8 +333,9 @@ export default function GestaoConseaPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
-      )}
+          </div>
+        </Tab>
+      </Tabs>
     </div>
   );
 }

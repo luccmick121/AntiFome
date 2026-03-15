@@ -8,10 +8,16 @@ export interface ProgressProps
   extends Omit<React.ComponentProps<typeof HeroProgress>, "radius"> {}
 
 function Progress({ className, classNames, ...props }: ProgressProps) {
+  const hasAccessibleLabel =
+    props.label !== undefined ||
+    props["aria-label"] !== undefined ||
+    props["aria-labelledby"] !== undefined;
+
   return (
     <HeroProgress
       radius="sm"
       className={className}
+      aria-label={hasAccessibleLabel ? props["aria-label"] : "Indicador de progresso"}
       classNames={{
         base: cn("gap-2", classNames?.base),
         label: cn("text-sm font-medium text-foreground", classNames?.label),
