@@ -3,10 +3,12 @@
 import { type ComponentType, useMemo, useState } from "react";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Autocomplete, AutocompleteItem } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { BreadcrumbItem, Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePicker, DateRangePicker } from "@/components/ui/date-picker";
 import { Divider } from "@/components/ui/divider";
 import {
   Dialog,
@@ -18,8 +20,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectItem } from "@/components/ui/select";
@@ -113,6 +117,11 @@ const wrapperRows = [
   { name: "Spinner", base: "HeroUI Spinner", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Tooltip", base: "HeroUI Tooltip", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Breadcrumbs", base: "HeroUI Breadcrumbs", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Autocomplete", base: "HeroUI Autocomplete", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "DatePicker", base: "HeroUI DatePicker", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "DateRangePicker", base: "HeroUI DateRangePicker", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Popover", base: "HeroUI Popover", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Drawer", base: "HeroUI Drawer", status: "Wrapper pronto", tone: "success" as Tone },
 ];
 
 const docsEntries = [
@@ -233,6 +242,7 @@ export default function DesignSystemPage() {
   const [selectedDoc, setSelectedDoc] = useState(docsEntries[0]);
   const [componentFilter, setComponentFilter] = useState("all");
   const [contactName, setContactName] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const filteredWrappers = useMemo(() => {
     if (componentFilter === "all") {
@@ -253,7 +263,7 @@ export default function DesignSystemPage() {
   }, [componentFilter]);
 
   return (
-    <div className="page-shell space-y-8">
+    <div className="space-y-8">
       <section
         id="overview"
         className="institutional-hero overflow-hidden rounded-[var(--radius-lg)] border-none px-6 py-8 text-white shadow-[0_24px_50px_rgba(16,24,40,0.22)] md:px-8 md:py-10"
@@ -295,7 +305,7 @@ export default function DesignSystemPage() {
               <HeroFact label="Biblioteca local" value="14 arquivos" />
               <HeroFact label="Categorias mapeadas" value="5 blocos" />
               <HeroFact label="Catálogo oficial" value="70 componentes" />
-              <HeroFact label="Wrappers locais" value="15 itens" />
+              <HeroFact label="Wrappers locais" value="26 itens" />
             </div>
           </div>
 
@@ -609,6 +619,83 @@ export default function DesignSystemPage() {
             <div className="flex justify-center rounded-lg border border-default-200 bg-[#F8FAFC] p-4">
               <Spinner label="Sincronizando dados do catálogo local" />
             </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <Autocomplete
+                label="Município para benchmark"
+                labelPlacement="outside"
+                placeholder="Digite para buscar"
+                defaultItems={[
+                  { key: "porto-alegre", label: "Porto Alegre" },
+                  { key: "pelotas", label: "Pelotas" },
+                  { key: "caxias-do-sul", label: "Caxias do Sul" },
+                  { key: "uruguaiana", label: "Uruguaiana" },
+                ]}
+              >
+                {(item: { key: string; label: string }) => (
+                  <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>
+                )}
+              </Autocomplete>
+              <DatePicker
+                label="Próxima reunião"
+                labelPlacement="outside"
+                granularity="day"
+              />
+            </div>
+
+            <DateRangePicker
+              label="Janela de análise"
+              labelPlacement="outside"
+              granularity="day"
+            />
+
+            <div className="flex flex-wrap gap-3">
+              <Popover placement="bottom">
+                <PopoverTrigger>
+                  <Button variant="outline">Abrir popover</Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="space-y-2 p-1">
+                    <p className="text-sm font-medium text-foreground">Resumo rápido</p>
+                    <p className="text-sm text-foreground-500">
+                      Use popover para contexto curto, ação leve ou microexplicação.
+                    </p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Button variant="outline" onPress={() => setDrawerOpen(true)}>
+                Abrir drawer
+              </Button>
+            </div>
+
+            <Drawer isOpen={drawerOpen} onOpenChange={setDrawerOpen}>
+              <DrawerContent>
+                <DrawerHeader>
+                  <p className="font-display text-xl font-semibold text-foreground">
+                    Painel lateral institucional
+                  </p>
+                  <p className="text-sm text-foreground-500">
+                    Use drawer para filtros densos, detalhes rápidos ou edição contextual.
+                  </p>
+                </DrawerHeader>
+                <DrawerBody>
+                  <div className="space-y-4 py-2">
+                    <Input label="Responsável" labelPlacement="outside" placeholder="Nome do gestor" />
+                    <Select label="Situação" labelPlacement="outside" selectedKeys={["ATIVO"]}>
+                      <SelectItem key="ATIVO">Ativo</SelectItem>
+                      <SelectItem key="ATENCAO">Em atenção</SelectItem>
+                    </Select>
+                  </div>
+                </DrawerBody>
+                <DrawerFooter>
+                  <Button variant="ghost" onPress={() => setDrawerOpen(false)}>
+                    Fechar
+                  </Button>
+                  <Button onPress={() => setDrawerOpen(false)}>Salvar filtro</Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
 
             <Tabs
               aria-label="Exemplo de abas do design system"

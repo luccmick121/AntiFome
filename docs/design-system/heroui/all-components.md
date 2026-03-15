@@ -106,8 +106,8 @@ Total oficial: 6 componentes
 |---|---|---|---|
 | `Calendar` | selecao de data por grade | agendas, reunioes, cronogramas e filtro por data | uso direto |
 | `DateField` | campo de data textual estruturado | formularios tecnicos e entradas controladas | uso direto |
-| `DatePicker` | campo de data com popover | cadastro de reuniao, prazo documental, vigencia | uso direto |
-| `DateRangePicker` | intervalo de datas | filtros de relatorio, serie historica e auditoria | uso direto |
+| `DatePicker` | campo de data com popover | cadastro de reuniao, prazo documental, vigencia | wrapper local pronto |
+| `DateRangePicker` | intervalo de datas | filtros de relatorio, serie historica e auditoria | wrapper local pronto |
 | `RangeCalendar` | calendario de intervalo | planejamento e janelas analiticas | uso direto |
 | `TimeField` | entrada de hora | horarios de reuniao, agenda e operacao | uso direto |
 
@@ -187,9 +187,9 @@ Total oficial: 6 componentes
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
 | `AlertDialog` | confirmacao critica e bloqueante | exclusao, revogacao, encerrar sessao, risco grave | uso direto |
-| `Drawer` | painel lateral | filtros densos, detalhes rapidos, edicao contextual | uso direto |
+| `Drawer` | painel lateral | filtros densos, detalhes rapidos, edicao contextual | wrapper local pronto |
 | `Modal` | janela sobreposta principal | confirmacao, formulario curto, detalhe rapido | preferir wrapper local `Dialog` |
-| `Popover` | contexto curto ancorado | dicas, acoes compactas, preview de item | uso direto |
+| `Popover` | contexto curto ancorado | dicas, acoes compactas, preview de item | wrapper local pronto |
 | `Toast` | feedback efemero | sucesso, erro, aviso e conclusao de fluxo | preferir wrapper local `useToast` |
 | `Tooltip` | dica breve suplementar | icones, siglas, metrica sem explicacao completa | wrapper local pronto |
 
@@ -199,7 +199,7 @@ Total oficial: 3 componentes
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `Autocomplete` | busca com sugestoes | municipio, membro, programa, indicador | uso direto |
+| `Autocomplete` | busca com sugestoes | municipio, membro, programa, indicador | wrapper local pronto |
 | `ComboBox` | campo que combina busca e selecao | bases grandes ou semantica mais rica | uso direto |
 | `Select` | selecao estruturada | status, risco, municipio, conselho, periodo | wrapper local pronto |
 
@@ -238,14 +238,14 @@ Os componentes de maior valor imediato para o produto sao:
 
 ## Proximos wrappers locais prioritarios
 
-Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea` e `Tabs`, os proximos candidatos naturais sao:
+Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea`, `Tabs`, `DatePicker`, `DateRangePicker`, `Autocomplete`, `Popover` e `Drawer`, os proximos candidatos naturais sao:
 
-1. `DatePicker`
-2. `Drawer`
-3. `Autocomplete`
-4. `DateRangePicker`
-5. `Popover`
-6. `Separator`
+1. `Separator`
+2. `DateField`
+3. `TimeField`
+4. `ComboBox`
+5. `RangeCalendar`
+6. `ScrollShadow`
 
 ## Componentes de baixa prioridade no produto atual
 

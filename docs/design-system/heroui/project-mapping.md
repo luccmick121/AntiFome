@@ -40,6 +40,11 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 | `Spinner` | `Spinner` | pronto |
 | `Tooltip` | `Tooltip` | pronto |
 | `Breadcrumbs` | `Breadcrumbs` | pronto |
+| `Autocomplete` | `Autocomplete` | pronto |
+| `DatePicker` | `DatePicker` | pronto |
+| `DateRangePicker` | `DateRangePicker` | pronto |
+| `Popover` | `Popover` | pronto |
+| `Drawer` | `Drawer` | pronto |
 | `Alert` | composicao local | pronto |
 | `AlertBanner` | composicao local | pronto |
 | `Label` | local | pronto |
@@ -68,11 +73,11 @@ Crie wrapper.
 
 Boas candidatas no projeto:
 
-- `DatePicker`
-- `Drawer`
-- `Autocomplete`
-- `DateRangePicker`
-- `Popover`
+- `Separator`
+- `DateField`
+- `TimeField`
+- `ComboBox`
+- `RangeCalendar`
 
 ### Nao existe wrapper local e o uso e pontual
 
@@ -152,12 +157,12 @@ Wrappers locais ja embutem:
 
 Os proximos wrappers mais valiosos para o projeto sao:
 
-1. `DatePicker`
-2. `Drawer`
-3. `Autocomplete`
-4. `DateRangePicker`
-5. `Popover`
-6. `Separator`
+1. `Separator`
+2. `DateField`
+3. `TimeField`
+4. `ComboBox`
+5. `RangeCalendar`
+6. `ScrollShadow`
 
 ## Leitura por categoria oficial
 
