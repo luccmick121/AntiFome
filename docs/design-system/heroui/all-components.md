@@ -104,12 +104,12 @@ Total oficial: 6 componentes
 
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
-| `Calendar` | selecao de data por grade | agendas, reunioes, cronogramas e filtro por data | uso direto |
-| `DateField` | campo de data textual estruturado | formularios tecnicos e entradas controladas | uso direto |
+| `Calendar` | selecao de data por grade | agendas, reunioes, cronogramas e filtro por data | wrapper local pronto |
+| `DateField` | campo de data textual estruturado | formularios tecnicos e entradas controladas | usar `DateInput` na versao instalada |
 | `DatePicker` | campo de data com popover | cadastro de reuniao, prazo documental, vigencia | wrapper local pronto |
 | `DateRangePicker` | intervalo de datas | filtros de relatorio, serie historica e auditoria | wrapper local pronto |
-| `RangeCalendar` | calendario de intervalo | planejamento e janelas analiticas | uso direto |
-| `TimeField` | entrada de hora | horarios de reuniao, agenda e operacao | uso direto |
+| `RangeCalendar` | calendario de intervalo | planejamento e janelas analiticas | wrapper local pronto |
+| `TimeField` | entrada de hora | horarios de reuniao, agenda e operacao | usar `TimeInput` na versao instalada |
 
 ## Feedback
 
@@ -177,6 +177,8 @@ Total oficial: 7 componentes
 | `Disclosure` | painel aberto ou fechado | exibicao sob demanda com controle simples | uso direto |
 | `DisclosureGroup` | grupo de disclosures coordenados | FAQ institucional, secoes tecnicas, ajuda | uso direto |
 | `Link` | navegacao sem semantica de botao | navegacao secundaria, referencias e downloads | wrapper local pronto |
+| `Menu` | agrupamento de acoes e atalhos | menus institucionais, acoes contextuais, listas curtas de operacao | wrapper local pronto |
+| `Navbar` | barra horizontal de navegacao | shells publicos, laboratorio interno, cabecalhos de modulo | wrapper local pronto |
 | `Pagination` | navegacao por paginas | listas extensas de municipios, docs e eventos | wrapper local pronto |
 | `Tabs` | alternancia entre secoes irmas | status, visoes analiticas, secoes do conselho | wrapper local pronto |
 
@@ -200,7 +202,7 @@ Total oficial: 3 componentes
 | Componente | Papel no HeroUI | Uso recomendado no Antifome RS | Adoção local |
 |---|---|---|---|
 | `Autocomplete` | busca com sugestoes | municipio, membro, programa, indicador | wrapper local pronto |
-| `ComboBox` | campo que combina busca e selecao | bases grandes ou semantica mais rica | uso direto |
+| `ComboBox` | campo que combina busca e selecao | bases grandes ou semantica mais rica | nao exposto nesta versao instalada |
 | `Select` | selecao estruturada | status, risco, municipio, conselho, periodo | wrapper local pronto |
 
 ## Typography
@@ -238,14 +240,14 @@ Os componentes de maior valor imediato para o produto sao:
 
 ## Proximos wrappers locais prioritarios
 
-Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea`, `Tabs`, `DatePicker`, `DateRangePicker`, `Autocomplete`, `Popover`, `Drawer`, `Accordion`, `Avatar`, `Checkbox`, `CheckboxGroup`, `RadioGroup`, `Switch`, `Slider`, `NumberField`, `Link`, `Kbd` e `ScrollShadow`, os proximos candidatos naturais sao:
+Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea`, `Tabs`, `DateInput`, `TimeInput`, `Calendar`, `RangeCalendar`, `DatePicker`, `DateRangePicker`, `Autocomplete`, `Popover`, `Drawer`, `Accordion`, `Avatar`, `Checkbox`, `CheckboxGroup`, `RadioGroup`, `Switch`, `Slider`, `NumberField`, `Link`, `Menu`, `Navbar`, `Kbd` e `ScrollShadow`, os proximos candidatos naturais sao:
 
 1. `Separator`
 2. `DateField`
 3. `TimeField`
 4. `ComboBox`
-5. `RangeCalendar`
-6. `Calendar`
+5. `Dropdown`
+6. `Listbox`
 
 ## Componentes de baixa prioridade no produto atual
 

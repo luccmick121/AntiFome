@@ -41,10 +41,16 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 | `Tooltip` | `Tooltip` | pronto |
 | `Breadcrumbs` | `Breadcrumbs` | pronto |
 | `Autocomplete` | `Autocomplete` | pronto |
+| `DateInput` | `DateInput` | pronto |
 | `DatePicker` | `DatePicker` | pronto |
 | `DateRangePicker` | `DateRangePicker` | pronto |
+| `TimeInput` | `TimeInput` | pronto |
+| `Calendar` | `Calendar` | pronto |
+| `RangeCalendar` | `RangeCalendar` | pronto |
 | `Popover` | `Popover` | pronto |
 | `Drawer` | `Drawer` | pronto |
+| `Menu` | `Menu` | pronto |
+| `Navbar` | `Navbar` | pronto |
 | `Accordion` | `Accordion` | pronto |
 | `Avatar` | `Avatar` | pronto |
 | `Checkbox` | `Checkbox` | pronto |
@@ -92,8 +98,8 @@ Boas candidatas no projeto:
 - `DateField`
 - `TimeField`
 - `ComboBox`
-- `RangeCalendar`
-- `Calendar`
+- `Dropdown`
+- `Listbox`
 
 ### Nao existe wrapper local e o uso e pontual
 
@@ -177,8 +183,8 @@ Os proximos wrappers mais valiosos para o projeto sao:
 2. `DateField`
 3. `TimeField`
 4. `ComboBox`
-5. `RangeCalendar`
-6. `Calendar`
+5. `Dropdown`
+6. `Listbox`
 
 ## Leitura por categoria oficial
 
