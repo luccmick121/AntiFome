@@ -96,7 +96,7 @@ Total oficial: 3 componentes
 |---|---|---|---|
 | `Badge` | rotulo semantico compacto | selo simples, pequena anotacao de estado | wrapper local usa `Chip` |
 | `Chip` | status, categoria ou contagem | aderido, em processo, inativo, risco e critico | preferir wrapper local `Badge` |
-| `Table` | exibicao estruturada de dados | ranking, conselhos, documentos, reunioes, membros | uso direto, wrapper prioritario |
+| `Table` | exibicao estruturada de dados | ranking, conselhos, documentos, reunioes, membros | wrapper local pronto |
 
 ## Date and Time
 
@@ -119,7 +119,7 @@ Total oficial: 6 componentes
 |---|---|---|---|
 | `Alert` | mensagem contextual na propria tela | orientacao, atencao, erro e aviso operacional | wrapper composicional local |
 | `Meter` | leitura de capacidade ou nivel | madurez, cobertura, eficiencia, aderencia percentual | uso direto |
-| `ProgressBar` | progresso linear | onboarding, upload, adesao ao SISAN, metas | uso direto, wrapper prioritario |
+| `ProgressBar` | progresso linear | onboarding, upload, adesao ao SISAN, metas | wrapper local pronto |
 | `ProgressCircle` | progresso radial | cards compactos de KPI e resumo executivo | uso direto |
 | `Skeleton` | placeholder de carregamento | dashboards, listas e mapa durante fetch | preferir wrapper local |
 | `Spinner` | estado de espera curto | botao carregando, bloco leve, refresh pontual | uso direto |
@@ -145,7 +145,7 @@ Total oficial: 16 componentes
 | `RadioGroup` | escolha unica explicita | comparacao clara entre cenarios ou opcoes | uso direto |
 | `SearchField` | busca com semantica dedicada | filtros globais e busca institucional | uso direto |
 | `TextField` | campo textual base | casos avancados de composicao manual | uso direto |
-| `TextArea` | texto longo | atas, pareceres, observacoes e justificativas | uso direto, wrapper prioritario |
+| `TextArea` | texto longo | atas, pareceres, observacoes e justificativas | wrapper local pronto |
 
 ## Layout
 
@@ -178,7 +178,7 @@ Total oficial: 7 componentes
 | `DisclosureGroup` | grupo de disclosures coordenados | FAQ institucional, secoes tecnicas, ajuda | uso direto |
 | `Link` | navegacao sem semantica de botao | navegacao secundaria, referencias e downloads | uso direto |
 | `Pagination` | navegacao por paginas | listas extensas de municipios, docs e eventos | uso direto |
-| `Tabs` | alternancia entre secoes irmas | status, visoes analiticas, secoes do conselho | uso direto, wrapper candidato |
+| `Tabs` | alternancia entre secoes irmas | status, visoes analiticas, secoes do conselho | wrapper local pronto |
 
 ## Overlays
 
@@ -201,7 +201,7 @@ Total oficial: 3 componentes
 |---|---|---|---|
 | `Autocomplete` | busca com sugestoes | municipio, membro, programa, indicador | uso direto |
 | `ComboBox` | campo que combina busca e selecao | bases grandes ou semantica mais rica | uso direto |
-| `Select` | selecao estruturada | status, risco, municipio, conselho, periodo | uso direto, wrapper prioritario |
+| `Select` | selecao estruturada | status, risco, municipio, conselho, periodo | wrapper local pronto |
 
 ## Typography
 
@@ -236,18 +236,16 @@ Os componentes de maior valor imediato para o produto sao:
 11. `Modal`
 12. `Tooltip`
 
-## Componentes que devem virar wrappers locais primeiro
+## Proximos wrappers locais prioritarios
 
-Pela frequencia de uso e pela necessidade de consistencia institucional, os proximos wrappers ideais sao:
+Depois da criacao dos wrappers de `Select`, `Table`, `ProgressBar`, `TextArea` e `Tabs`, os proximos candidatos naturais sao:
 
-1. `Select`
-2. `Table`
-3. `ProgressBar`
-4. `TextArea`
-5. `Tabs`
-6. `Tooltip`
-7. `DatePicker`
-8. `Drawer`
+1. `Tooltip`
+2. `DatePicker`
+3. `Drawer`
+4. `Autocomplete`
+5. `Pagination`
+6. `Breadcrumbs`
 
 ## Componentes de baixa prioridade no produto atual
 

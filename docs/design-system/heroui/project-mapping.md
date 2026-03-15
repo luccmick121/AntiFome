@@ -29,6 +29,11 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 | `Skeleton` | `Skeleton` | pronto |
 | `Dialog` | `Modal` | pronto |
 | `ToastProvider` / `useToast` | `ToastProvider`, `addToast` | pronto |
+| `Select` | `Select` | pronto |
+| `Progress` | `Progress` | pronto |
+| `Table` | `Table` | pronto |
+| `Textarea` | `Textarea` | pronto |
+| `Tabs` | `Tabs` | pronto |
 | `Alert` | composicao local | pronto |
 | `AlertBanner` | composicao local | pronto |
 | `Label` | local | pronto |
@@ -38,11 +43,7 @@ Essa separacao e saudavel: o projeto nao precisa usar tudo, mas precisa conhecer
 Encontrado no projeto:
 
 - `HeroUIProvider`
-- `Progress`
-- `Table`
 - `Divider`
-- `Select`
-- `SelectItem`
 - `Chip`
 
 ## Regras de adocao
@@ -62,12 +63,7 @@ Crie wrapper.
 
 Boas candidatas no projeto:
 
-- `Progress`
-- `Select`
-- `Table`
 - `Divider`
-- `TextArea`
-- `Tabs`
 - `Tooltip`
 - `DatePicker`
 - `Drawer`
@@ -150,14 +146,12 @@ Wrappers locais ja embutem:
 
 Os proximos wrappers mais valiosos para o projeto sao:
 
-1. `Select`
-2. `Table`
-3. `ProgressBar`
-4. `TextArea`
-5. `Tabs`
-6. `Tooltip`
-7. `DatePicker`
-8. `Drawer`
+1. `Tooltip`
+2. `DatePicker`
+3. `Drawer`
+4. `Autocomplete`
+5. `Pagination`
+6. `Breadcrumbs`
 
 ## Leitura por categoria oficial
 
@@ -186,7 +180,3 @@ Os proximos wrappers mais valiosos para o projeto sao:
 ## Regra de ouro do mapeamento
 
 Quando um componente oficial entrar no fluxo principal do produto e aparecer em mais de uma tela importante, ele deixa de ser apenas item de catalogo e passa a ser candidato real a wrapper local.
-3. `Table`
-4. `Textarea`
-5. `Tabs`
-6. `Tooltip`

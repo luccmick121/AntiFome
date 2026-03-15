@@ -225,16 +225,14 @@ Nao banalize `danger`.
 
 ## Wrappers prioritarios
 
-Os componentes que mais valem padronizacao local imediata sao:
+Com a base atual pronta, os proximos componentes que mais valem padronizacao local sao:
 
-1. `Select`
-2. `Table`
-3. `ProgressBar`
-4. `TextArea`
-5. `Tabs`
-6. `Tooltip`
-7. `DatePicker`
-8. `Drawer`
+1. `Tooltip`
+2. `DatePicker`
+3. `Drawer`
+4. `Autocomplete`
+5. `Pagination`
+6. `Breadcrumbs`
 
 ## Guidelines para hackathon
 

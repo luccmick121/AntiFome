@@ -1,7 +1,7 @@
 "use client";
 
 import { type ComponentType, useMemo, useState } from "react";
-import { Select, SelectItem, Divider, Progress, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Snippet } from "@heroui/react";
+import { Divider, Snippet } from "@heroui/react";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectItem } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, Tab } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
 import {
   colorTokens,
@@ -92,10 +97,11 @@ const wrapperRows = [
   { name: "Input", base: "HeroUI Input", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Dialog", base: "HeroUI Modal", status: "Wrapper pronto", tone: "success" as Tone },
   { name: "Toast", base: "HeroUI Toast", status: "Wrapper pronto", tone: "success" as Tone },
-  { name: "Select", base: "HeroUI Select", status: "Uso direto", tone: "warning" as Tone },
-  { name: "Progress", base: "HeroUI Progress", status: "Uso direto", tone: "warning" as Tone },
-  { name: "Table", base: "HeroUI Table", status: "Uso direto", tone: "warning" as Tone },
-  { name: "Tabs", base: "HeroUI Tabs", status: "Boa candidata a wrapper", tone: "urgency" as Tone },
+  { name: "Select", base: "HeroUI Select", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Progress", base: "HeroUI Progress", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Table", base: "HeroUI Table", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Textarea", base: "HeroUI Textarea", status: "Wrapper pronto", tone: "success" as Tone },
+  { name: "Tabs", base: "HeroUI Tabs", status: "Wrapper pronto", tone: "success" as Tone },
 ];
 
 const docsEntries = [
@@ -216,6 +222,7 @@ export default function DesignSystemPage() {
               <HeroFact label="Biblioteca local" value="14 arquivos" />
               <HeroFact label="Categorias mapeadas" value="5 blocos" />
               <HeroFact label="Catálogo oficial" value="70 componentes" />
+              <HeroFact label="Wrappers locais" value="15 itens" />
             </div>
           </div>
 
@@ -376,6 +383,13 @@ export default function DesignSystemPage() {
               />
             </div>
 
+            <Textarea
+              label="Observação institucional"
+              labelPlacement="outside"
+              placeholder="Descreva contexto, risco, pendência documental ou decisão da reunião."
+              minRows={4}
+            />
+
             <Divider />
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -448,6 +462,28 @@ export default function DesignSystemPage() {
               <Skeleton className="h-24 w-full" />
               <Skeleton className="h-24 w-full" />
             </div>
+
+            <Tabs
+              aria-label="Exemplo de abas do design system"
+              selectedKey="wrappers"
+              classNames={{ panel: "pt-4" }}
+            >
+              <Tab key="wrappers" title="Wrappers">
+                <div className="rounded-md border border-default-100 bg-content2 p-4 text-sm text-foreground-500">
+                  Use wrappers locais para preservar tokens, variantes e densidade institucional.
+                </div>
+              </Tab>
+              <Tab key="catalogo" title="Catálogo">
+                <div className="rounded-md border border-default-100 bg-content2 p-4 text-sm text-foreground-500">
+                  O catálogo mestre documenta os 70 componentes oficiais e orienta a adoção por prioridade.
+                </div>
+              </Tab>
+              <Tab key="guidelines" title="Guidelines">
+                <div className="rounded-md border border-default-100 bg-content2 p-4 text-sm text-foreground-500">
+                  Cada tela deve ser explicável em segundos, com semântica clara e mínimo ruído visual.
+                </div>
+              </Tab>
+            </Tabs>
           </CardContent>
         </Card>
 
