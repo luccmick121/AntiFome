@@ -1,462 +1,485 @@
 # Plataforma Antifome RS — Modelo de Dados
 
-**Version:** 1.0.0
-**Last Updated:** 14/03/2026
-**Status:** Active
-**ORM:** Prisma 5.x
+**Version:** 1.1.0  
+**Last Updated:** 15/03/2026  
+**Status:** Alinhado ao schema Prisma atual  
+**Schema:** [backend/prisma/schema.prisma](/home/mestredoblack/teste/backend/prisma/schema.prisma)
 
 ---
 
-## Visão Geral do Schema
+## Visão geral
 
-O modelo de dados suporta:
-- **Multi-estado:** Tabela `estados` como raiz para expansão nacional
-- **497 municípios:** Com código IBGE, região e geometria GeoJSON
-- **Conselhos:** Com status (ATIVO/ATRASADO/INATIVO) e histórico
-- **LGPD:** Dados sensíveis anonimizados, sem CPFs
-- **Índice Antifome:** Calculado dinamicamente
+O modelo de dados do Antifome RS foi desenhado para representar duas dimensões ao mesmo tempo:
+
+- a estrutura institucional dos conselhos e municípios
+- a visão analítica que sustenta dashboard, ranking, alertas e mapa
+
+Ele é compacto o suficiente para um MVP de hackathon, mas já organiza o domínio de forma crível para expansão futura.
 
 ---
 
-## Diagrama ER (Simplificado)
+## Princípios do modelo
 
-```
-┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-│   Estados    │       │ Municipios   │       │ Conselhos    │
-│──────────────│       │──────────────│       │──────────────│
-│ id (PK)      │◄──────│ estadoId(FK) │       │ id (PK)      │
-│ sigla        │       │ id (PK)      │◄──────│ municipioId  │
-│ nome         │       │ ibgeCode     │       │ status       │
-└──────────────┘       │ nome         │       │ dataCriacao  │
-                       │ regiao       │       │ ultimoRelatorio│
-                       │ geojson      │       └───────┬───────┘
-                       └──────┬───────┘               │
-                              │                       │
-          ┌───────────────────┼───────────────────────┤
-          │                   │                       │
-          ▼                   ▼                       ▼
-┌──────────────┐    ┌──────────────┐         ┌──────────────┐
-│ Relatorios   │    │ RecursosSAN  │         │   Membros    │
-│ Fome         │    │──────────────│         │──────────────│
-│──────────────│    │ id (PK)      │         │ id (PK)      │
-│ id (PK)      │    │ municipioId  │         │ conselhoId   │
-│ municipioId  │    │ orcamentoTotal│        │ nome         │
-│ qtdFamilias  │    │ orcExecutado │         │ cargo        │
-│ nivelGravidade│   │ ano          │         │ contato      │
-│ periodo      │    └──────────────┘         └───────┬───────┘
-└──────────────┘                                     │
-                                                     ▼
-                                             ┌──────────────┐
-                                             │  Reunioes    │
-                                             │──────────────│
-                                             │ id (PK)      │
-                                             │ conselhoId   │
-                                             │ data         │
-                                             │ pauta        │
-                                             └───────┬───────┘
-                                                     │
-                                                     ▼
-                                             ┌──────────────┐
-                                             │    Atas      │
-                                             │──────────────│
-                                             │ id (PK)      │
-                                             │ reuniaoId    │
-                                             │ descricao    │
-                                             │ arquivoUrl   │
-                                             └──────────────┘
+### 1. Município como centro operacional
 
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│   Usuarios   │    │   Selos      │    │ Documentos   │
-│──────────────│    │──────────────│    │──────────────│
-│ id (PK)      │    │ id (PK)      │    │ id (PK)      │
-│ email        │    │ municipioId  │    │ titulo       │
-│ senha        │    │ tipo         │    │ categoria    │
-│ perfil       │    │ conquistadoEm│    │ arquivoUrl   │
-│ municipioId  │    └──────────────┘    └──────────────┘
-└──────────────┘
+O município é a unidade principal da aplicação. Quase tudo converge para ele:
+
+- conselho
+- relatórios de fome
+- selos
+- usuários vinculados
+- status institucional
+
+### 2. Conselho como unidade de governança local
+
+O conselho representa a capacidade institucional do município de operar a política pública.
+
+### 3. Usuário como chave de acesso, não como centro de domínio
+
+O usuário serve para autenticação e autorização de contexto. O domínio principal continua sendo município e conselho.
+
+### 4. Dados mistos: persistidos e derivados
+
+Parte da plataforma vem de dados persistidos em tabelas. Outra parte é derivada por regras em services.
+
+Exemplos:
+
+- persistido: reuniões, documentos, membros
+- derivado: progresso de selo, recomendações, histórico sintético de índice
+
+---
+
+## Diagrama ER do modelo atual
+
+```mermaid
+erDiagram
+    ESTADO ||--o{ MUNICIPIO : contem
+    MUNICIPIO ||--o{ CONSELHO : possui
+    MUNICIPIO ||--o{ RELATORIO_FOME : recebe
+    MUNICIPIO ||--o{ SELO : conquista
+    MUNICIPIO ||--o{ USUARIO : vincula
+    CONSELHO ||--o{ MEMBRO : possui
+    CONSELHO ||--o{ REUNIAO : registra
+    CONSELHO ||--o{ DOCUMENTO : armazena
 ```
 
 ---
 
-## Schema Prisma Completo
+## Entidades principais
 
-```prisma
-// prisma/schema.prisma
+## Estado
 
-generator client {
-  provider = "prisma-client-js"
-}
+Representa a unidade federativa. Hoje o sistema está focado no RS, mas o modelo já suporta expansão.
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+### Campos principais
 
-// ============================================
-// MODELOS PRINCIPAIS
-// ============================================
+- `id`
+- `nome`
+- `sigla`
+- `created_at`
+- `updated_at`
 
-model Estado {
-  id          String      @id @default(cuid())
-  sigla       String      @unique // "RS"
-  nome        String      // "Rio Grande do Sul"
-  codigoIbge  String?     @unique // "43" (código do estado no IBGE)
+### Papel no sistema
 
-  municipios  Municipio[]
+- agrupar municípios
+- permitir futura expansão para múltiplos estados
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+---
 
-  @@map("estados")
-}
+## Municipio
 
-model Municipio {
-  id          String      @id @default(cuid())
-  ibgeCode    String      @unique // Código IBGE do município
-  nome        String
-  regiao      String      // "Metropolitana", "Norte", "Sul", etc.
-  estadoId    String
-  geojson     Json?       // Geometria simplificada (GeoJSON Polygon)
+É a entidade central do sistema.
 
-  // Relacionamentos
-  estado      Estado      @relation(fields: [estadoId], references: [id])
-  conselho    Conselho?
-  relatorios  RelatorioFome[]
-  recursos    RecursoSAN?
-  selos       Selo[]
-  usuario     Usuario[]
+### Campos principais
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+- `codigo_ibge`
+- `nome`
+- `estado_id`
+- `populacao`
+- `indice_antifome`
+- `status`
+- `latitude`
+- `longitude`
 
-  @@index([estadoId])
-  @@index([regiao])
-  @@map("municipios")
-}
+### Papel no sistema
 
-model Conselho {
-  id                String      @id @default(cuid())
-  municipioId       String      @unique
-  status            StatusConselho @default(INATIVO)
-  dataCriacao       DateTime?
-  ultimoRelatorioAt DateTime?
-  totalReunioes     Int         @default(0)
-  totalRelatorios   Int         @default(0)
+- servir de base para ranking
+- alimentar o mapa
+- concentrar os dados de vulnerabilidade e governança
+- vincular conselho, relatórios, selos e usuários
 
-  // Relacionamentos
-  municipio         Municipio  @relation(fields: [municipioId], references: [id])
-  membros           Membro[]
-  reunioes          Reuniao[]
+### Índices definidos
 
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+- por `estado_id`
+- por `status`
+- por combinação `estado_id + status`
 
-  @@index([status])
-  @@map("conselhos")
-}
+Esses índices ajudam leituras frequentes em dashboards, filtros e ranking.
 
-model Membro {
-  id          String      @id @default(cuid())
-  conselhoId  String
-  nome        String
-  cargo       CargoConselho @default(MEMBRO)
-  contato     String?     // Telefone ou email (sem CPF)
-  ativo       Boolean     @default(true)
+---
 
-  // Relacionamentos
-  conselho    Conselho    @relation(fields: [conselhoId], references: [id])
+## Conselho
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+Representa a instância institucional local de segurança alimentar.
 
-  @@index([conselhoId])
-  @@map("membros")
-}
+### Campos principais
 
-model Reuniao {
-  id          String      @id @default(cuid())
-  conselhoId  String
-  data        DateTime
-  pauta       String
-  temAta      Boolean     @default(false)
+- `municipio_id`
+- `nome`
+- `status`
+- `created_at`
+- `updated_at`
 
-  // Relacionamentos
-  conselho    Conselho    @relation(fields: [conselhoId], references: [id])
-  ata         Ata?
-  presentes   Membro[]    @relation("ReuniaoPresentes")
+### Papel no sistema
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+- ser a base do portal do conselheiro
+- organizar membros, reuniões e documentos
+- refletir capacidade institucional do município
 
-  @@index([conselhoId])
-  @@index([data])
-  @@map("reunioes")
-}
+### Status
 
-model Ata {
-  id          String      @id @default(cuid())
-  reuniaoId   String      @unique
-  descricao   String
-  arquivoUrl  String?     // URL do arquivo anexado (ou null para MVP)
+- `ATIVO`
+- `INATIVO`
+- `SUSPENSO`
 
-  // Relacionamentos
-  reuniao     Reuniao     @relation(fields: [reuniaoId], references: [id])
+---
 
-  createdAt   DateTime    @default(now())
+## Membro
 
-  @@map("atas")
-}
+Representa um integrante do conselho.
 
-model RelatorioFome {
-  id              String      @id @default(cuid())
-  municipioId     String
-  qtdFamiliasRisco Int        // Quantidade de famílias em risco
-  nivelGravidade  NivelGravidade // BAIXO, MEDIO, ALTO, GRAVE
-  periodo         String      // "2024-Q1", "2024-Q2", etc.
+### Campos principais
 
-  // Relacionamentos
-  municipio       Municipio  @relation(fields: [municipioId], references: [id])
+- `conselho_id`
+- `nome`
+- `cargo`
+- `email`
+- `telefone`
 
-  createdAt       DateTime    @default(now())
+### Papel no sistema
 
-  @@index([municipioId])
-  @@index([periodo])
-  @@map("relatorios_fome")
-}
+- permitir o cadastro da composição do conselho
+- sustentar métricas de governança e progresso institucional
 
-model RecursoSAN {
-  id              String      @id @default(cuid())
-  municipioId     String      @unique
-  orcamentoTotal  Decimal     @db.Decimal(15, 2) // R$ com 2 casas decimais
-  orcamentoExecutado Decimal  @db.Decimal(15, 2)
-  ano             Int
+### Cargo
 
-  // Relacionamentos
-  municipio       Municipio  @relation(fields: [municipioId], references: [id])
+- `PRESIDENTE`
+- `VICE`
+- `MEMBRO`
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+---
 
-  @@map("recursos_san")
-}
+## Reuniao
 
-model Selo {
-  id              String      @id @default(cuid())
-  municipioId     String
-  tipo            TipoSelo    // BRONZE, PRATA, OURO
-  conquistadoEm   DateTime
+Representa o registro de uma reunião do conselho.
 
-  // Relacionamentos
-  municipio       Municipio  @relation(fields: [municipioId], references: [id])
+### Campos principais
 
-  @@index([municipioId])
-  @@map("selos")
-}
+- `conselho_id`
+- `data`
+- `tipo`
+- `pauta`
+- `ata_url`
 
-// ============================================
-// AUTH & USUARIOS
-// ============================================
+### Papel no sistema
 
-model Usuario {
-  id          String      @id @default(cuid())
-  email       String      @unique
-  senha       String      // bcrypt hash
-  perfil      PerfilUsuario
-  municipioId String?     // Link ao município (opcional para gestor-estadual)
-  ativo       Boolean     @default(true)
+- medir atividade do conselho
+- alimentar estatísticas e status
+- sustentar alertas de inatividade
 
-  // Relacionamentos
-  municipio   Municipio?  @relation(fields: [municipioId], references: [id])
+### Tipo
 
-  lastLoginAt DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+- `ORDINARIA`
+- `EXTRAORDINARIA`
 
-  @@index([perfil])
-  @@map("usuarios")
-}
+---
 
-// ============================================
-// DOCUMENTOS
-// ============================================
+## RelatorioFome
 
-model Documento {
-  id          String      @id @default(cuid())
-  titulo      String
-  descricao   String?
-  categoria   CategoriaDocumento
-  arquivoUrl  String
-  formato     String      // "PDF", "DOCX", etc.
-  uploadedBy  String?     // ID do usuário (null para docs oficiais)
+Representa a evidência de acompanhamento da insegurança alimentar.
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+### Campos principais
 
-  @@index([categoria])
-  @@map("documentos")
-}
+- `municipio_id`
+- `mes_ano`
+- `nivel_gravidade`
+- `dados_json`
 
-// ============================================
-// AUDITORIA (LGPD)
-// ============================================
+### Papel no sistema
 
-model AuditLog {
-  id          String      @id @default(cuid())
-  usuarioId   String?
-  acao        String      // "CREATE", "UPDATE", "DELETE", "LOGIN", etc.
-  entidade    String      // "Membro", "Reuniao", "Conselho", etc.
-  entidadeId  String?
-  detalhes    Json?       // Dados da ação (antes/depois)
-  ip          String?
+- servir como insumo para leitura de regularidade do município
+- alimentar parte dos alertas
+- sustentar parte do status institucional do conselho
 
-  createdAt   DateTime    @default(now())
+### Observação
 
-  @@index([usuarioId])
-  @@index([entidade])
-  @@index([createdAt])
-  @@map("audit_logs")
-}
+O campo `dados_json` permite armazenar estrutura flexível sem expandir o schema no MVP.
 
-// ============================================
-// ENUMS
-// ============================================
+---
 
-enum StatusConselho {
-  ATIVO
-  ATRASADO
-  INATIVO
-}
+## Selo
 
-enum CargoConselho {
-  PRESIDENTE
-  VICE_PRESIDENTE
-  SECRETARIO
-  MEMBRO
-}
+Representa marcos de reconhecimento institucional do município.
 
-enum NivelGravidade {
-  BAIXO
-  MEDIO
-  ALTO
-  GRAVE
-}
+### Campos principais
 
-enum TipoSelo {
-  BRONZE
-  PRATA
-  OURO
-}
+- `municipio_id`
+- `tipo`
+- `conquistado_em`
 
-enum PerfilUsuario {
-  GESTOR_ESTADUAL
-  GESTOR_MUNICIPAL
-  CONSELHEIRO
-  SOCIEDADE_CIVIL
-}
+### Papel no sistema
 
-enum CategoriaDocumento {
-  LEI
-  DECRETO
-  TERMOS
-  MODELO
-  GUIA
-}
+- enriquecer ranking
+- sustentar narrativa de gamificação institucional
+- mostrar evolução do município
+
+### Tipos
+
+- `BRONZE`
+- `PRATA`
+- `OURO`
+- `PLATINA`
+
+---
+
+## Usuario
+
+Representa a credencial de acesso ao sistema.
+
+### Campos principais
+
+- `email`
+- `senha_hash`
+- `role`
+- `municipio_id`
+
+### Papel no sistema
+
+- autenticar o usuário
+- vincular conselheiros a municípios específicos
+- diferenciar acesso estadual de acesso municipal
+
+### Roles
+
+- `ADMIN`
+- `GESTOR_ESTADUAL`
+- `CONSELHEIRO_MUNICIPAL`
+
+### Observação
+
+O vínculo com `municipio_id` é opcional porque gestores estaduais não precisam estar associados a um município.
+
+---
+
+## Documento
+
+Representa um arquivo institucional do conselho.
+
+### Campos principais
+
+- `conselho_id`
+- `nome`
+- `categoria`
+- `descricao`
+- `arquivo_url`
+- `arquivo_tipo`
+- `arquivo_tamanho`
+- `criado_por`
+
+### Papel no sistema
+
+- armazenar documentos do conselho
+- dar evidência institucional à banca
+- permitir demo prática de upload e consulta
+
+---
+
+## Enums do domínio
+
+## StatusMunicipio
+
+- `ATIVO`
+- `INATIVO`
+- `ATRASADO`
+
+### Interpretação prática
+
+- `ATIVO`: boa situação institucional relativa
+- `ATRASADO`: sinais de fragilidade ou atraso
+- `INATIVO`: baixa atividade institucional
+
+## StatusConselho
+
+- `ATIVO`
+- `INATIVO`
+- `SUSPENSO`
+
+## NivelGravidade
+
+- `BAIXO`
+- `MODERADO`
+- `ALTO`
+- `CRITICO`
+
+### Uso
+
+Hoje está ligado principalmente aos relatórios de fome.
+
+---
+
+## Relacionamentos explicados
+
+### Estado -> Municípios
+
+Um estado possui muitos municípios.
+
+### Município -> Conselhos
+
+Um município pode ter mais de um conselho ao longo do tempo no modelo, mas na prática a operação busca o conselho ativo do município.
+
+### Conselho -> Membros / Reuniões / Documentos
+
+Essas três entidades descrevem a vida operacional do conselho.
+
+### Município -> Relatórios / Selos / Usuários
+
+- relatórios: evidências de monitoramento
+- selos: reconhecimento institucional
+- usuários: vínculo de autenticação e contexto
+
+---
+
+## O que é persistido e o que é calculado
+
+| Item | Persistido? | Onde nasce |
+|---|---|---|
+| usuários | sim | tabela `usuarios` |
+| documentos | sim | tabela `documentos` |
+| reuniões | sim | tabela `reunioes` |
+| membros | sim | tabela `membros` |
+| status do conselho | sim | tabela `conselhos` |
+| progresso de selo | não | `ConselhosService` |
+| recomendações | não | `ConselhosService` |
+| série histórica do índice | não | `MunicipiosService` |
+| alertas combinados | não | `AlertasService` |
+
+Essa distinção é importante para a banca entender o que já é infraestrutura de dados e o que ainda é inteligência derivada do MVP.
+
+---
+
+## Como o modelo sustenta cada tela
+
+## Dashboard
+
+Usa principalmente:
+
+- `municipios`
+- `conselhos`
+- `reunioes`
+- `selos`
+
+## Ranking
+
+Usa principalmente:
+
+- `municipios`
+- `selos`
+
+## Mapa
+
+Usa principalmente:
+
+- `municipios`
+- GeoJSON base
+
+## Alertas
+
+Usa principalmente:
+
+- `conselhos`
+- `reunioes`
+- `relatorios_fome`
+- `municipios`
+
+## Portal do conselho
+
+Usa principalmente:
+
+- `usuarios`
+- `municipios`
+- `conselhos`
+- `membros`
+- `reunioes`
+- `documentos`
+
+---
+
+## Seed e plausibilidade de dados
+
+O seed atual cria um cenário de demonstração realista:
+
+- estado RS
+- 497 municípios
+- distribuição de status
+- conselhos
+- membros
+- reuniões
+- relatórios
+- selos
+- usuários de acesso
+
+Isso é crucial para hackathon, porque permite demo rica sem depender de integração externa.
+
+---
+
+## Limitações do modelo atual
+
+### 1. Não existe trilha de auditoria persistida
+
+O schema atual não possui tabela de auditoria implementada, embora isso seja uma evolução natural.
+
+### 2. Progressos e selos não são tabela de regras
+
+As regras vivem na service, não em metadados persistidos.
+
+### 3. Documentos são locais
+
+O banco guarda metadados, mas o binário fica em disco local.
+
+### 4. Histórico de índice é parcialmente sintético
+
+Bom para demo, mas deve ser substituído por séries reais em produção.
+
+---
+
+## Mapa mental do domínio
+
+```mermaid
+mindmap
+  root((Dominio de dados))
+    Territorio
+      Estado
+      Municipio
+    Governanca
+      Conselho
+      Membro
+      Reuniao
+      Documento
+    Monitoramento
+      RelatorioFome
+      StatusMunicipio
+      NivelGravidade
+    Reconhecimento
+      Selo
+    Acesso
+      Usuario
+      Role
 ```
 
 ---
 
-## Cálculo do Índice Antifome
+## Leituras complementares
 
-O **Índice Antifome** (score 0-10) é calculado dinamicamente:
-
-```
-Índice = ((Reuniões / 12) × 0.4 + (Relatórios / 5) × 0.6) × 10
-```
-
-Onde:
-- **12** = máximo de reuniões trimestrais (1 por mês × 3)
-- **5** = máximo de relatórios mensais
-- **0.4 / 0.6** = pesos de cada fator
-
-### Exemplo de Cálculo
-
-```typescript
-// Para um conselho com 8 reuniões e 3 relatórios no trimestre
-const reunioes = 8;
-const relatorios = 3;
-
-const indice = ((reunioes / 12) * 0.4 + (relatorios / 5) * 0.6) * 10;
-// = ((0.667) * 0.4 + (0.6) * 0.6) * 10
-// = (0.267 + 0.36) * 10
-// = 6.27
-```
-
-### Implementação no Backend
-
-```typescript
-// dashboard.service.ts
-calculateIndiceAntifome(reunioes: number, relatorios: number): number {
-  const reunioesNorm = Math.min(reunioes, 12) / 12;
-  const relatoriosNorm = Math.min(relatorios, 5) / 5;
-
-  const indice = ((reunioesNorm * 0.4) + (relatoriosNorm * 0.6)) * 10;
-
-  return Math.round(indice * 100) / 100; // 2 casas decimais
-}
-```
-
----
-
-## Mapeamento Regiões do RS
-
-| Código | Região | Municípios Exemplo |
-|--------|--------|-------------------|
-| MET | Metropolitana | Porto Alegre, Canoas, São Leopoldo |
-| NOR | Nordeste | Caxias do Sul, Bento Gonçalves, Veranópolis |
-| NORO | Noroeste | Passo Fundo, Erechim, Carazinho |
-| OES | Oeste | Santa Maria, Santiago, Santo Ângelo |
-| SUL | Sul | Pelotas, Rio Grande, Bagé |
-| CEN | Central | Cruz Alta, Ibirubá, Passo do Sobrado |
-
----
-
-## Distribuição Realista de Status (Seed)
-
-| Status | Porcentagem | Quantidade (497) |
-|--------|-------------|------------------|
-| ATIVO | 71% | ~353 |
-| ATRASADO | 17% | ~84 |
-| INATIVO | 12% | ~60 |
-
----
-
-## Índices Recomendados
-
-```sql
--- Performance queries frequentes
-CREATE INDEX idx_municipios_estado ON municipios(estado_id);
-CREATE INDEX idx_municipios_regiao ON municipios(regiao);
-CREATE INDEX idx_conselhos_status ON conselhos(status);
-CREATE INDEX idx_reunioes_data ON reunioes(data DESC);
-CREATE INDEX idx_relatorios_periodo ON relatorios_fome(periodo);
-CREATE INDEX idx_audit_created ON audit_logs(created_at DESC);
-```
-
----
-
-## Relações Importantes
-
-| Relação | Cardinalidade | Cascade |
-|---------|--------------|---------|
-| Estado → Municipios | 1:N | Sim |
-| Municipio → Conselho | 1:1 | Sim |
-| Conselho → Membros | 1:N | Sim |
-| Conselho → Reunioes | 1:N | Sim |
-| Reuniao → Ata | 1:0..1 | Sim |
-| Municipio → RelatorioFome | 1:N | Não |
-| Municipio → RecursoSAN | 1:1 | Não |
-| Municipio → Selos | 1:N | Sim |
-
----
-
-_Modelo de dados criado por Aria (Architect) — 14/03/2026_
+- [api-architecture.md](/home/mestredoblack/teste/docs/architecture/api-architecture.md)
+- [api-spec.md](/home/mestredoblack/teste/docs/architecture/api-spec.md)
+- [api-flows.md](/home/mestredoblack/teste/docs/architecture/api-flows.md)

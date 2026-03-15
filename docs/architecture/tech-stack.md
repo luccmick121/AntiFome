@@ -1,587 +1,390 @@
 # Plataforma Antifome RS — Pilha Tecnológica
 
-**Version:** 1.0.0
-**Last Updated:** 14/03/2026
-**Status:** Active
+**Version:** 1.1.0  
+**Last Updated:** 15/03/2026  
+**Status:** Atualizada para o monorepo real
 
 ---
 
-## Resumo da Stack
+## Resumo executivo
 
-| Camada | Tecnologia | Versão | Finalidade |
-|--------|-----------|--------|------------|
-| Frontend | Next.js | 14+ (App Router) | SPA/SSR com React Server Components |
-| UI Components | shadcn/ui | latest | Componentes acessíveis Radix + Tailwind |
-| Estilização | Tailwind CSS | 3.x | Utility-first CSS |
-| Mapa | Leaflet + react-leaflet | 4.x | Mapas interativos open-source |
-| Backend | NestJS | 10.x | Framework Node.js modular |
-| ORM | Prisma | 5.x | Type-safe database access |
-| Banco | PostgreSQL | 15+ | Banco relacional |
-| Autenticação | JWT + bcrypt | - | Tokens seguros |
-| Documentação | Swagger | - | API docs automática |
+A stack do Antifome RS foi escolhida para equilibrar quatro exigências do hackathon:
+
+- velocidade de implementação
+- clareza arquitetural
+- boa capacidade de demonstração
+- base suficientemente séria para continuação depois da banca
 
 ---
 
-## Frontend — Next.js 14
+## Stack consolidada
 
-### Por que Next.js?
-
-| Benefício | Descrição |
-|-----------|-----------|
-| **App Router** | Roteamento baseado em diretórios, layouts aninhados |
-| **React Server Components** | Renderização server-side, menos JavaScript no client |
-| **SSR/SSG** | Performance inicial, SEO para conteúdo público |
-| **Tailwind Integration** | Suporte nativo para Tailwind CSS |
-| **TypeScript** | Type safety em toda a aplicação |
-
-### Estrutura App Router
-
-```
-src/app/
-├── layout.tsx              # Layout root (sidebar + header)
-├── page.tsx                # Dashboard principal (/)
-├── loading.tsx             # Loading state global
-├── error.tsx               # Error boundary global
-│
-├── (auth)/
-│   └── login/
-│       └── page.tsx        # Tela de login (/login)
-│
-├── (dashboard)/
-│   ├── layout.tsx          # Layout com sidebar autenticada
-│   ├── page.tsx            # Dashboard (/)
-│   ├── mapa/
-│   │   └── page.tsx        # Mapa interativo (/mapa)
-│   ├── ranking/
-│   │   └── page.tsx        # Ranking (/ranking)
-│   ├── alertas/
-│   │   └── page.tsx        # Alertas (/alertas)
-│   ├── municipios/
-│   │   └── [id]/
-│   │       └── page.tsx    # Detalhe município (/municipios/:id)
-│   ├── gestao/
-│   │   └── page.tsx        # Gestão CONSEA (/gestao)
-│   └── documentos/
-│       └── page.tsx        # Repositório docs (/documentos)
-│
-├── (conselho)/
-│   ├── layout.tsx          # Layout portal conselheiro
-│   ├── page.tsx            # Portal (/conselho)
-│   ├── membros/
-│   │   └── page.tsx        # Gestão membros (/conselho/membros)
-│   └── reunioes/
-│       └── page.tsx        # Registro reuniões (/conselho/reunioes)
-│
-└── api/                    # Route Handlers (se necessário)
-    └── ...
-```
+| Camada | Tecnologia | Papel no projeto |
+|---|---|---|
+| monorepo | `pnpm` | padronização e orquestração do workspace |
+| frontend | Next.js 14 | aplicação web principal |
+| UI | HeroUI + Tailwind CSS | base visual e componentes |
+| backend | NestJS 10 | API modular |
+| ORM | Prisma | acesso ao banco e modelagem |
+| banco | PostgreSQL | persistência relacional |
+| autenticação | JWT | sessão autenticada |
+| sessão web | cookie HTTP-only | transporte do token |
+| mapa | Leaflet + react-leaflet | visualização territorial |
+| validação de forms | zod + react-hook-form | formulários do frontend |
+| docs visuais | Swagger | apresentação da API |
+| testes navegação | Playwright | validação E2E |
 
 ---
 
-## UI Components — shadcn/ui
+## Monorepo e package management
 
-### Componentes Utilizados
+O projeto usa `pnpm` como padrão oficial.
 
-| Componente | Uso |
-|------------|-----|
-| **Card** | KPI cards, informação em painéis |
-| **Table** | Ranking de municípios, listas |
-| **Dialog** | Modais de confirmação |
-| **Form** | Cadastro membros, reuniões |
-| **Badge** | Status de conselhos (cor por estado) |
-| **Tabs** | Abas no portal do conselho |
-| **Select** | Filtros de região, status |
-| **Input** | Busca, formulários |
-| **Button** | Ações principais, "Quebrar Silêncio" |
-| **Tooltip** | Informações no hover do mapa |
+### Motivo
 
-### Instalação
+- melhor aderência a monorepo
+- instalação mais eficiente
+- padronização entre frontend e backend
+- facilidade de scripts na raiz
+
+### Evidência no repositório
+
+O root [package.json](/home/mestredoblack/teste/package.json) define:
+
+- `packageManager: "pnpm@10.28.2"`
+- `preinstall` que bloqueia uso de `npm`
+
+### Scripts mais importantes
 
 ```bash
-cd frontend
-npx shadcn-ui@latest init
-npx shadcn-ui@latest add card table dialog form badge tabs select input button
+pnpm dev
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed
 ```
 
 ---
 
-## Estilização — Tailwind CSS
+## Frontend
 
-### Tema Customizado
+## Next.js 14
 
-```typescript
-// tailwind.config.ts
-import type { Config } from 'tailwindcss'
+### Por que foi escolhido
 
-const config: Config = {
-  content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {
-      colors: {
-        // Paleta Antifome RS
-        'petroleo': {
-          DEFAULT: '#1A2F23',
-          50: '#E8EBE9',
-          100: '#C5CCCA',
-          200: '#9EAD9F',
-          300: '#778E75',
-          400: '#5A765A',
-          500: '#3D5E3D',
-          600: '#324D32',
-          700: '#283D28',
-          800: '#1D2D1D',
-          900: '#1A2F23',
-        },
-        'urgencia': {
-          DEFAULT: '#B71C1C',
-          50: '#FFEBEE',
-          100: '#FFCDD2',
-          200: '#EF9A9A',
-          300: '#E57373',
-          400: '#EF5350',
-          500: '#F44336',
-          600: '#E53935',
-          700: '#D32F2F',
-          800: '#C62828',
-          900: '#B71C1C',
-        },
-        'sucesso': {
-          DEFAULT: '#2E7D32',
-          50: '#E8F5E9',
-          100: '#C8E6C9',
-          200: '#A5D6A7',
-          300: '#81C784',
-          400: '#66BB6A',
-          500: '#4CAF50',
-          600: '#43A047',
-          700: '#388E3C',
-          800: '#2E7D32',
-          900: '#1B5E20',
-        },
-        'aviso': {
-          DEFAULT: '#FF8F00',
-          50: '#FFF8E1',
-          100: '#FFECB3',
-          200: '#FFE082',
-          300: '#FFD54F',
-          400: '#FFCA28',
-          500: '#FFC107',
-          600: '#FFB300',
-          700: '#FFA000',
-          800: '#FF8F00',
-          900: '#FF6F00',
-        },
-      },
-      fontFamily: {
-        'sans': ['Roboto', 'system-ui', 'sans-serif'],
-      },
-    },
-  },
-  plugins: [],
-}
+- App Router simplifica organização por contexto
+- layouts aninhados ajudam a separar área estadual e portal do conselho
+- ótima narrativa para banca técnica
+- fácil integração com middleware e rotas protegidas
 
-export default config
-```
+### Onde aparece
 
-### Cores Principais
+- [frontend/package.json](/home/mestredoblack/teste/frontend/package.json)
+- [frontend/src/app](/home/mestredoblack/teste/frontend/src/app)
 
-| Nome | Código | Uso |
-|------|--------|-----|
-| `petroleo` | #1A2F23 | Primária, sidebar, header |
-| `urgencia` | #B71C1C | Botões ação, crítico, inativo |
-| `sucesso` | #2E7D32 | Ativo, sucesso, positivo |
-| `aviso` | #FF8F00 | Atrasado, aviso, amarelo |
-| `bg` | #F5F5F5 | Fundo geral |
-| `text` | #212121 | Texto corpo |
+## React 18
+
+### Papel
+
+- base da composição de componentes
+- estado local e hooks
+- renderização de páginas client-side e híbridas
+
+## HeroUI
+
+### Papel
+
+- fornece base dos componentes visuais
+- acelera criação de botões, cards, inputs, badges e toasts
+
+### Motivo para hackathon
+
+- reduz tempo de construção visual
+- mantém aparência mais consistente do que componentes soltos
+
+## Tailwind CSS
+
+### Papel
+
+- layout
+- responsividade
+- tokens visuais
+- customização rápida
+
+### Motivo
+
+- velocidade
+- previsibilidade
+- boa compatibilidade com HeroUI
+
+## Leaflet + react-leaflet
+
+### Papel
+
+- motor da visualização geográfica do RS
+
+### Motivo
+
+- open source
+- sem dependência de API paga
+- suficiente para mapa interativo de demo
 
 ---
 
-## Mapa — Leaflet
+## Backend
 
-### Configuração
+## NestJS 10
 
-```typescript
-// components/map/rs-map.tsx
-import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
+### Por que foi escolhido
 
-// Configuração do mapa do RS
-const RS_CENTER: [number, number] = [-30.0346, -51.2177] // Porto Alegre
-const RS_ZOOM = 7
+- organização modular muito clara
+- padrão profissional para banca
+- controllers e services deixam o domínio explicável
+- integração nativa com Swagger e pipes
 
-export function RSMap() {
-  return (
-    <MapContainer
-      center={RS_CENTER}
-      zoom={RS_ZOOM}
-      style={{ height: '100%', width: '100%' }}
-      scrollWheelZoom={true}
-    >
-      <TileLayer
-        attribution='&copy; OpenStreetMap'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <MunicipalitiesLayer />
-      <MapLegend />
-    </MapContainer>
-  )
-}
-```
+### Módulos atuais
 
-### Camadas do Mapa
+- auth
+- municipios
+- conselhos
+- dashboard
+- mapa
+- ranking
+- alertas
+- health
 
-| Camada | Tipo | Visível | Descrição |
-|--------|------|---------|-----------|
-| Base | Choropleth | Sempre | Polígonos coloridos por status |
-| IAG | Heatmap | Toggle | Insegurança alimentar grave |
-| Cozinhas | Markers | Toggle | Cozinhas solidárias |
-| PPSAN | Markers | Toggle | Pontos Populares SAN |
+## Prisma
 
-### Cores por Status
+### Papel
 
-```typescript
-const STATUS_COLORS = {
-  ATIVO: '#2E7D32',    // Verde
-  ATRASADO: '#FF8F00', // Amarelo
-  INATIVO: '#B71C1C',  // Vermelho
-}
-```
+- modelagem do banco
+- client tipado
+- seed e evolução do schema
+
+### Benefício para hackathon
+
+- reduz atrito de banco
+- melhora clareza do domínio
+- facilita documentação do modelo
+
+## PostgreSQL
+
+### Papel
+
+- persistência relacional do domínio
+
+### Motivo
+
+- adequado para dados institucionais
+- robusto e conhecido
+- encaixa bem com Prisma
 
 ---
 
-## Backend — NestJS
+## Autenticação e segurança
 
-### Módulos Principais
+## JWT
 
-```
-src/
-├── main.ts                    # Bootstrap, CORS, ValidationPipe
-├── app.module.ts              # Root module
-│
-├── auth/
-│   ├── auth.module.ts
-│   ├── auth.controller.ts     # POST /auth/login, /auth/logout
-│   ├── auth.service.ts        # Validação credentials, JWT
-│   ├── dto/
-│   │   └── login.dto.ts       # LoginRequest schema
-│   └── guards/
-│       ├── jwt.guard.ts       # Validade JWT token
-│       └── roles.guard.ts     # Valida perfil RBAC
-│
-├── municipios/
-│   ├── municipios.module.ts
-│   ├── municipios.controller.ts  # CRUD municípios
-│   └── municipios.service.ts     # Business logic
-│
-├── conselhos/
-│   ├── conselhos.module.ts
-│   ├── conselhos.controller.ts   # CRUD conselhos
-│   └── conselhos.service.ts      # Status, índices
-│
-├── reunioes/
-│   ├── reunioes.module.ts
-│   ├── reunioes.controller.ts    # CRUD reuniões + atas
-│   └── reunioes.service.ts       # Registro, validação
-│
-├── membros/
-│   ├── membros.module.ts
-│   ├── membros.controller.ts     # CRUD membros
-│   └── membros.service.ts        # Gestão conselheiros
-│
-├── dashboard/
-│   ├── dashboard.module.ts
-│   ├── dashboard.controller.ts   # GET /dashboard/stats
-│   └── dashboard.service.ts      # Agregação de KPIs
-│
-├── mapa/
-│   ├── mapa.module.ts
-│   ├── mapa.controller.ts        # GET /mapa/geojson
-│   └── mapa.service.ts           # Cache, GeoJSON
-│
-├── documentos/
-│   ├── documentos.module.ts
-│   ├── documentos.controller.ts  # CRUD documentos
-│   └── documentos.service.ts     # Upload, categorização
-│
-└── prisma/
-    ├── prisma.module.ts          # Global module
-    └── prisma.service.ts         # Prisma client wrapper
-```
+### Papel
 
-### Configuração main.ts
+- carregar identidade do usuário autenticado
+- transportar `sub`, `email`, `role` e `municipioId`
 
-```typescript
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+## Cookie HTTP-only
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+### Papel
 
-  // CORS
-  app.enableCors({
-    origin: ['http://localhost:3000'],
-    credentials: true,
-  });
+- guardar a sessão do cliente web
 
-  // Validation
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-  }));
+### Motivo
 
-  // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('Antifome API')
-    .setDescription('API da Plataforma Antifome RS')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+- simples para integração browser + API
+- reduz manipulação manual de token no frontend
 
-  await app.listen(3001);
-}
-bootstrap();
+## Helmet
+
+### Papel
+
+- hardening de headers HTTP
+
+## Compression
+
+### Papel
+
+- reduzir payloads de resposta
+
+## ValidationPipe
+
+### Papel
+
+- garantir saneamento e transformação dos dados de entrada
+
+---
+
+## Developer experience
+
+## TypeScript
+
+Está presente em:
+
+- frontend
+- backend
+- scripts
+- Prisma client usage
+
+### Valor
+
+- clareza
+- segurança em refactor
+- melhor comunicação entre camadas
+
+## Swagger
+
+### Papel
+
+- documentação visual da API
+- exploração rápida de endpoints
+- apoio em demo técnica
+
+## Playwright
+
+### Papel
+
+- testar fluxos reais de navegação
+- reproduzir problemas de login e acesso
+
+---
+
+## Scripts e ferramentas auxiliares
+
+## Seed
+
+- [backend/prisma/seed.ts](/home/mestredoblack/teste/backend/prisma/seed.ts)
+
+### Papel
+
+- popular o banco com cenário plausível
+- permitir demo rica
+
+## Geração de GeoJSON
+
+- [backend/scripts/gerar-geojson.ts](/home/mestredoblack/teste/backend/scripts/gerar-geojson.ts)
+
+### Papel
+
+- construir base territorial do mapa
+
+## Criação de usuário
+
+- [backend/scripts/create-user.ts](/home/mestredoblack/teste/backend/scripts/create-user.ts)
+
+### Papel
+
+- facilitar provisão de acessos demo
+
+---
+
+## Dependências por contexto
+
+```mermaid
+flowchart LR
+    PNPM[pnpm monorepo] --> FE[Frontend]
+    PNPM --> BE[Backend]
+
+    FE --> Next[Next.js]
+    FE --> HeroUI[HeroUI]
+    FE --> Tailwind[Tailwind]
+    FE --> Leaflet[Leaflet]
+    FE --> Forms[zod + react-hook-form]
+
+    BE --> Nest[NestJS]
+    BE --> Prisma[Prisma]
+    BE --> JWT[JwtModule]
+    BE --> Swagger[Swagger]
+    BE --> PG[PostgreSQL]
 ```
 
 ---
 
-## Database — PostgreSQL + Prisma
+## Por que essa stack faz sentido para a banca
 
-### Comandos Prisma
+### Clareza
+
+A banca consegue reconhecer rapidamente uma arquitetura moderna e defensável.
+
+### Coerência
+
+Frontend, backend e banco conversam bem entre si.
+
+### Viabilidade
+
+Nada aqui depende de infraestrutura exótica ou de ferramenta difícil de operar.
+
+### Evolução
+
+É uma base plausível para seguir depois do hackathon.
+
+---
+
+## Trade-offs assumidos
+
+| Escolha | Benefício | Trade-off |
+|---|---|---|
+| cookie HTTP-only | simples para web | menos amigável para clientes externos puros |
+| uploads locais | implementação rápida | não ideal para produção |
+| HeroUI + Tailwind | velocidade visual | camada de abstração a mais |
+| regras em services | agilidade no MVP | menos configurável via banco |
+| dados seeded | demo forte | parte do cenário ainda é sintético |
+
+---
+
+## Comandos de referência
+
+### Monorepo
 
 ```bash
-# Gerar cliente
-npx prisma generate
-
-# Criar migration
-npx prisma migrate dev --name init
-
-# Aplicar migration
-npx prisma migrate deploy
-
-# Seed
-npx prisma db seed
-
-# Reset
-npx prisma migrate reset
-
-# Studio (GUI)
-npx prisma studio
+pnpm install
+pnpm dev
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm test
 ```
 
-### Configuração .env
-
-```env
-# Database
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/antifome"
-
-# JWT
-JWT_SECRET="sua-chave-secreta-aqui"
-JWT_EXPIRES_IN="24h"
-
-# App
-NEXT_PUBLIC_API_URL="http://localhost:3001/api"
-```
-
-### Seed Script
-
-```typescript
-// prisma/seed.ts
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
-
-async function main() {
-  // 1. Criar estado RS
-  const rs = await prisma.estado.create({
-    data: {
-      sigla: 'RS',
-      nome: 'Rio Grande do Sul',
-      codigoIbge: '43',
-    },
-  })
-
-  // 2. Buscar municípios da API do IBGE
-  const response = await fetch(
-    'https://servicodados.ibge.gov.br/api/v1/localidades/estados/43/municipios'
-  )
-  const municipios = await response.json()
-
-  // 3. Inserir cada município com status simulado
-  for (const mun of municipios) {
-    const status = randomStatus() // 71% ativo, 17% atrasado, 12% inativo
-
-    await prisma.municipio.create({
-      data: {
-        ibgeCode: mun.id.toString(),
-        nome: mun.nome,
-        regiao: getRegiao(mun.microrregiao.nome),
-        estadoId: rs.id,
-        conselho: {
-          create: {
-            status,
-            dataCriacao: status !== 'INATIVO' ? randomPastDate() : null,
-            totalReunioes: status === 'ATIVO' ? randomInt(8, 15) : randomInt(0, 5),
-            totalRelatorios: status === 'ATIVO' ? randomInt(3, 6) : randomInt(0, 2),
-          },
-        },
-        relatorios: {
-          create: {
-            qtdFamiliasRisco: randomInt(100, 5000),
-            nivelGravidade: randomGravidade(),
-            periodo: '2026-Q1',
-          },
-        },
-        recursos: {
-          create: {
-            orcamentoTotal: randomDecimal(100000, 1000000),
-            orcamentoExecutado: randomDecimal(50000, 600000),
-            ano: 2026,
-          },
-        },
-      },
-    })
-  }
-
-  console.log(`✅ ${municipios.length} municípios inseridos`)
-}
-
-main()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect())
-```
-
----
-
-## Autenticação — JWT + RBAC
-
-### Fluxo de Login
-
-```
-1. Usuário envia email + senha → POST /api/auth/login
-2. Backend valida credenciais no banco
-3. Se válido, gera JWT token com payload:
-   {
-     "sub": "user-id",
-     "email": "user@email.com",
-     "perfil": "GESTOR_ESTADUAL",
-     "municipioId": null
-   }
-4. Retorna token + dados do usuário
-5. Frontend armazena token (httpOnly cookie ou localStorage)
-6. Em cada request, frontend envia Authorization: Bearer <token>
-7. Backend valida token no JWT Guard
-8. Roles Guard verifica se perfil tem permissão para a rota
-```
-
-### Perfis e Permissões
-
-| Perfil | Descricao | Rotas |
-|--------|-----------|-------|
-| `GESTOR_ESTADUAL` | CONSEA-RS | Todas as rotas |
-| `GESTOR_MUNICIPAL` | Prefeitura | `/municipios/:id`, `/dashboard` (limitado) |
-| `CONSELHEIRO` | Membro conselho | `/conselho/*` |
-| `SOCIEDADE_CIVIL` | Entidade | `/mapa`, `/ranking`, `/documentos` (leitura) |
-
----
-
-## Docker Compose
-
-```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: antifome-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: antifome
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-```
-
----
-
-## Scripts NPM
-
-### Frontend (package.json)
-
-```json
-{
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
-  }
-}
-```
-
-### Backend (package.json)
-
-```json
-{
-  "scripts": {
-    "build": "nest build",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:prod": "node dist/main",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "prisma db seed",
-    "prisma:studio": "prisma studio"
-  }
-}
-```
-
----
-
-## Setup Rápido
-
-### Pré-requisitos
-
-- Node.js 18+
-- Docker Desktop
-- npm ou yarn
-
-### Passos
+### Banco
 
 ```bash
-# 1. Iniciar banco
-docker-compose up -d
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed
+pnpm db:studio
+```
 
-# 2. Backend
-cd backend
-npm install
-npx prisma migrate dev
-npx prisma db seed
-npm run start:dev  # Porta 3001
+### Backend
 
-# 3. Frontend
-cd frontend
-npm install
-npm run dev  # Porta 3000
+```bash
+pnpm --filter antifome-rs-backend start:dev
+pnpm --filter antifome-rs-backend build
+```
 
-# 4. Acessar
-# Frontend: http://localhost:3000
-# API Docs: http://localhost:3001/api/docs
+### Frontend
+
+```bash
+pnpm --filter antifome-rs-frontend dev
+pnpm --filter antifome-rs-frontend build
 ```
 
 ---
 
-_Pilha tecnológica definida por Aria (Architect) — 14/03/2026_
+## Conclusão
+
+A stack do Antifome RS não foi escolhida só por familiaridade. Ela foi escolhida porque ajuda a entregar:
+
+- boa demo
+- boa explicação
+- boa evolução
+
+Para hackathon, isso importa mais do que uma stack excessivamente sofisticada.

@@ -1,648 +1,417 @@
 # Plataforma Antifome RS — Arquitetura do Frontend
 
-**Version:** 1.0.0
-**Last Updated:** 14/03/2026
-**Status:** Active
-**Framework:** Next.js 14 (App Router)
+**Version:** 1.1.0  
+**Last Updated:** 15/03/2026  
+**Status:** Alinhado ao frontend atual  
+**Framework:** Next.js 14 App Router
 
 ---
 
-## Visão Geral
+## Visão geral
 
-O frontend é construído com **Next.js 14** usando App Router, **Tailwind CSS** para estilização, **shadcn/ui** para componentes e **Leaflet** para o mapa interativo.
+O frontend do Antifome RS foi desenhado para sustentar dois modos de uso distintos dentro da mesma aplicação:
+
+- visão estadual de monitoramento e decisão
+- visão municipal de operação do conselho
+
+Essa separação é uma das forças do projeto para hackathon, porque mostra que o sistema não é só visualização: ele também suporta operação institucional.
 
 ---
 
-## Estrutura de Pastas
+## Papel do frontend na arquitetura
 
-```
-frontend/
-├── public/
-│   ├── favicon.ico
-│   └── geojson/
-│       └── rs-municipios.json     # GeoJSON estático (fallback)
-│
-├── src/
-│   ├── app/                       # App Router pages
-│   │   ├── layout.tsx             # Root layout
-│   │   ├── page.tsx               # Home (redirect)
-│   │   ├── globals.css            # Global styles + Tailwind
-│   │   ├── loading.tsx            # Loading global
-│   │   ├── error.tsx              # Error boundary
-│   │   │
-│   │   ├── (auth)/                # Group: Rotas públicas (sem sidebar)
-│   │   │   └── login/
-│   │   │       └── page.tsx       # /login
-│   │   │
-│   │   ├── (dashboard)/           # Group: Dashboard (com sidebar)
-│   │   │   ├── layout.tsx         # Layout com sidebar
-│   │   │   ├── page.tsx           # / → Dashboard principal
-│   │   │   ├── mapa/
-│   │   │   │   └── page.tsx       # /mapa → Mapa interativo
-│   │   │   ├── ranking/
-│   │   │   │   └── page.tsx       # /ranking → Ranking municípios
-│   │   │   ├── alertas/
-│   │   │   │   └── page.tsx       # /alertas → Alertas inatividade
-│   │   │   ├── municipios/
-│   │   │   │   └── [id]/
-│   │   │   │       └── page.tsx   # /municipios/:id → Detalhe
-│   │   │   ├── gestao/
-│   │   │   │   └── page.tsx       # /gestao → Gestão CONSEA
-│   │   │   ├── documentos/
-│   │   │   │   └── page.tsx       # /documentos → Repositório
-│   │   │   └── simulador/
-│   │   │       └── page.tsx       # /simulador → Simulador impacto
-│   │   │
-│   │   └── (conselho)/            # Group: Portal do conselheiro
-│   │       ├── layout.tsx         # Layout portal conselho
-│   │       ├── page.tsx           # /conselho → Home portal
-│   │       ├── membros/
-│   │       │   └── page.tsx       # /conselho/membros
-│   │       └── reunioes/
-│   │           └── page.tsx       # /conselho/reunioes
-│   │
-│   ├── components/
-│   │   ├── ui/                    # shadcn/ui (auto-gerado)
-│   │   │   ├── button.tsx
-│   │   │   ├── card.tsx
-│   │   │   ├── table.tsx
-│   │   │   ├── dialog.tsx
-│   │   │   ├── badge.tsx
-│   │   │   ├── tabs.tsx
-│   │   │   ├── select.tsx
-│   │   │   ├── input.tsx
-│   │   │   ├── form.tsx
-│   │   │   └── tooltip.tsx
-│   │   │
-│   │   ├── layout/
-│   │   │   ├── sidebar.tsx        # Sidebar de navegação
-│   │   │   ├── header.tsx         # Header com KPIs
-│   │   │   ├── kpi-card.tsx       # Card de KPI individual
-│   │   │   └── mobile-nav.tsx     # Navegação mobile
-│   │   │
-│   │   ├── map/
-│   │   │   ├── rs-map.tsx         # Mapa principal
-│   │   │   ├── municipalities-layer.tsx  # Polígonos
-│   │   │   ├── iag-layer.tsx      # Camada IAG (heatmap)
-│   │   │   ├── cozinhas-layer.tsx # Camada cozinhas
-│   │   │   ├── ppsan-layer.tsx    # Camada PPSAN
-│   │   │   ├── map-controls.tsx   # Zoom, filtros
-│   │   │   ├── map-legend.tsx     # Legenda fixa
-│   │   │   └── map-tooltip.tsx    # Tooltip ao hover
-│   │   │
-│   │   ├── dashboard/
-│   │   │   ├── ranking-table.tsx  # Tabela ranking
-│   │   │   ├── alert-list.tsx     # Lista alertas
-│   │   │   ├── status-badge.tsx   # Badge de status
-│   │   │   ├── impact-simulator.tsx # Simulador
-│   │   │   └── progress-bar.tsx   # Barra de progresso
-│   │   │
-│   │   ├── conselho/
-│   │   │   ├── member-form.tsx    # Form cadastro membro
-│   │   │   ├── member-list.tsx    # Lista membros
-│   │   │   ├── meeting-form.tsx   # Form registro reunião
-│   │   │   ├── meeting-list.tsx   # Lista reuniões
-│   │   │   └── seal-progress.tsx  # Progresso selos
-│   │   │
-│   │   └── common/
-│   │       ├── data-table.tsx     # Table genérica
-│   │       ├── search-input.tsx   # Input de busca
-│   │       ├── filter-dropdown.tsx # Dropdown de filtro
-│   │       └── loading-skeleton.tsx # Skeleton loading
-│   │
-│   ├── lib/
-│   │   ├── api.ts                 # Cliente API (fetch wrapper)
-│   │   ├── auth.ts                # Auth context + helpers
-│   │   ├── utils.ts               # cn(), formatCurrency, etc.
-│   │   └── constants.ts           # Cores, URLs, config
-│   │
-│   ├── hooks/
-│   │   ├── use-auth.ts            # Hook de autenticação
-│   │   ├── use-dashboard-stats.ts # Hook KPIs
-│   │   ├── use-municipios.ts      # Hook municípios
-│   │   └── use-map-data.ts        # Hook dados mapa
-│   │
-│   └── styles/
-│       └── globals.css            # Variáveis CSS, Tailwind
-│
-├── tailwind.config.ts
-├── next.config.js
-├── tsconfig.json
-└── package.json
+O frontend é responsável por:
+
+- renderizar a experiência do usuário
+- controlar navegação entre áreas públicas e protegidas
+- recuperar sessão a partir do backend
+- consumir a API NestJS
+- traduzir dados institucionais em componentes visuais claros
+
+Ele não é um frontend genérico de CRUD. Ele é a camada de demonstração do valor do produto.
+
+---
+
+## Tecnologias usadas
+
+| Área | Tecnologia | Papel |
+|---|---|---|
+| framework | Next.js 14 | estrutura da app |
+| runtime UI | React 18 | componentes e estado |
+| design system | HeroUI | base dos componentes de interface |
+| utilitários de estilo | Tailwind CSS | layout e styling |
+| ícones | Lucide | iconografia |
+| mapa | Leaflet + react-leaflet | visualização territorial |
+| validação de form | react-hook-form + zod | login e formulários |
+| animação | framer-motion | recursos visuais disponíveis |
+| auth auxiliar | jose | validação de JWT no middleware |
+
+---
+
+## Estrutura real de rotas
+
+```text
+frontend/src/app
+├── page.tsx
+├── layout.tsx
+├── globals.css
+├── (auth)/
+│   ├── login/page.tsx
+│   └── forgot-password/page.tsx
+├── (dashboard)/
+│   ├── layout.tsx
+│   ├── dashboard/page.tsx
+│   ├── alertas/page.tsx
+│   ├── gestao/page.tsx
+│   ├── mapa/page.tsx
+│   ├── ranking/page.tsx
+│   ├── simulador/page.tsx
+│   └── design-system/page.tsx
+└── conselho/
+    ├── layout.tsx
+    ├── page.tsx
+    ├── login/page.tsx
+    ├── membros/page.tsx
+    ├── reunioes/page.tsx
+    ├── status/page.tsx
+    └── documentos/page.tsx
 ```
 
 ---
 
-## Layouts
+## Organização por contexto
 
-### Root Layout (app/layout.tsx)
+## Área pública
 
-```tsx
-// Layout raiz: Fontes, Providers globais
-export default function RootLayout({ children }) {
-  return (
-    <html lang="pt-BR">
-      <body className="font-sans bg-gray-50 text-gray-900">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-      </body>
-    </html>
-  )
-}
-```
+### Rotas
 
-### Dashboard Layout (app/(dashboard)/layout.tsx)
+- `/`
+- `/login`
+- `/forgot-password`
+- `/conselho/login`
 
-```tsx
-// Layout com sidebar + header KPIs
-export default function DashboardLayout({ children }) {
-  return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  )
-}
-```
+### Papel
 
-### Conselho Layout (app/(conselho)/layout.tsx)
+- apresentar a plataforma
+- permitir autenticação de gestor
+- permitir autenticação de conselheiro
 
-```tsx
-// Layout portal do conselheiro (diferente do dashboard)
-export default function ConselhoLayout({ children }) {
-  return (
-    <div className="flex h-screen">
-      <ConselhoSidebar />
-      <div className="flex-1 flex flex-col">
-        <ConselhoHeader />
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  )
-}
+## Área estadual
+
+### Rotas
+
+- `/dashboard`
+- `/ranking`
+- `/mapa`
+- `/alertas`
+- `/gestao`
+- `/simulador`
+
+### Papel
+
+- apresentar o panorama do estado
+- servir de demo principal para a banca
+- apoiar decisão e monitoramento
+
+## Área do conselho
+
+### Rotas
+
+- `/conselho`
+- `/conselho/status`
+- `/conselho/membros`
+- `/conselho/reunioes`
+- `/conselho/documentos`
+
+### Papel
+
+- permitir operação cotidiana do conselho
+- comprovar valor além da camada analítica
+
+---
+
+## Arquitetura de layout
+
+```mermaid
+flowchart TD
+    Root[app/layout.tsx]
+    Root --> Providers[AppProviders]
+    Root --> Public[rotas publicas]
+    Root --> Dashboard[(dashboard)/layout.tsx]
+    Root --> Conselho[conselho/layout.tsx]
+
+    Dashboard --> Sidebar[Sidebar]
+    Dashboard --> Header[Header]
+    Dashboard --> AuthContext[AuthProvider + useAuth]
+
+    Conselho --> PortalShell[layout do portal]
+    Conselho --> ConselhoFetch[fetch de /api/auth/me e /api/conselhos/mine]
 ```
 
 ---
 
-## Componentes Layout
+## Providers globais
 
-### Sidebar
+O arquivo [app-providers.tsx](/home/mestredoblack/teste/frontend/src/components/providers/app-providers.tsx) empacota:
 
-```tsx
-// components/layout/sidebar.tsx
-'use client'
+- `HeroUIProvider`
+- `ToastProvider`
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import {
-  Map, BarChart3, AlertTriangle, FileText,
-  Settings, LogOut, ChevronLeft
-} from 'lucide-react'
+### Resultado
 
-const navItems = [
-  { href: '/', label: 'Dashboard', icon: BarChart3 },
-  { href: '/mapa', label: 'Mapa RS', icon: Map },
-  { href: '/ranking', label: 'Ranking', icon: BarChart3 },
-  { href: '/alertas', label: 'Alertas', icon: AlertTriangle, badge: true },
-  { href: '/documentos', label: 'Documentos', icon: FileText },
-  { href: '/gestao', label: 'Gestão CONSEA', icon: Settings },
-]
+- base visual consistente
+- sistema global de toasts
+- ponto único para evoluir providers futuros
 
-export function Sidebar() {
-  const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+---
 
-  return (
-    <aside className={`
-      bg-petroleo text-white h-full flex flex-col
-      transition-all duration-300
-      ${collapsed ? 'w-16' : 'w-64'}
-    `}>
-      {/* Logo */}
-      <div className="p-4 border-b border-petroleo-700">
-        <h1 className="text-xl font-bold">
-          Antifome <span className="text-sucesso">RS</span>
-        </h1>
-      </div>
+## Middleware e proteção de rotas
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`
-              flex items-center gap-3 px-3 py-2 rounded
-              transition-colors
-              ${pathname === item.href
-                ? 'bg-petroleo-700 text-white'
-                : 'text-petroleo-200 hover:bg-petroleo-800'
-              }
-            `}
-          >
-            <item.icon size={20} />
-            {!collapsed && (
-              <>
-                <span>{item.label}</span>
-                {item.badge && <AlertBadge />}
-              </>
-            )}
-          </Link>
-        ))}
-      </nav>
+O [middleware.ts](/home/mestredoblack/teste/frontend/src/middleware.ts) faz:
 
-      {/* Footer */}
-      <div className="p-4 border-t border-petroleo-700">
-        <button onClick={() => setCollapsed(!collapsed)}>
-          <ChevronLeft className={collapsed ? 'rotate-180' : ''} />
-        </button>
-      </div>
-    </aside>
-  )
-}
-```
+- liberação de rotas públicas
+- leitura do cookie `access_token`
+- validação do JWT com `jose`
+- redirecionamento para `/login` quando necessário
+- separação macro entre área estadual e área do conselho
 
-### Header com KPIs
+### Regras principais
 
-```tsx
-// components/layout/header.tsx
-'use client'
+- rotas `/conselho*` exigem conselheiro
+- rotas `/dashboard`, `/mapa`, `/ranking`, `/alertas`, `/gestao`, `/simulador` exigem papel estadual
 
-import { useDashboardStats } from '@/hooks/use-dashboard-stats'
-import { KPICard } from './kpi-card'
+### Importância para demo
 
-export function Header() {
-  const { data, isLoading } = useDashboardStats()
+Essa camada deixa clara a separação de perfis sem obrigar o usuário a entender a API.
 
-  return (
-    <header className="bg-white border-b px-6 py-3">
-      <div className="flex items-center gap-4">
-        <KPICard
-          label="Conselhos Ativos"
-          value={`${data?.conselhosAtivos.porcentagem}%`}
-          subvalue={`${data?.conselhosAtivos.total} conselhos`}
-          color="success"
-          loading={isLoading}
-        />
-        <KPICard
-          label="Famílias em Risco"
-          value={data?.familiasEmRisco.total.toLocaleString('pt-BR')}
-          subvalue={`Grave: ${data?.familiasEmRisco.grauGrave.toLocaleString('pt-BR')}`}
-          color="danger"
-          loading={isLoading}
-        />
-        <KPICard
-          label="Orçamento SAN"
-          value={`${data?.orcamentoSAN.porcentagemExecucao}%`}
-          subvalue={`R$ ${(data?.orcamentoSAN.executado / 1e6).toFixed(1)}M / R$ ${(data?.orcamentoSAN.total / 1e6).toFixed(0)}M`}
-          color="warning"
-          loading={isLoading}
-        />
-        <KPICard
-          label="Alertas"
-          value={data?.alertas.conselhosInativos + data?.alertas.conselhosAtrasados}
-          subvalue={`${data?.alertas.conselhosInativos} inativos`}
-          color="danger"
-          loading={isLoading}
-        />
-      </div>
-    </header>
-  )
-}
+---
+
+## Estado de autenticação no client
+
+O [auth-context.tsx](/home/mestredoblack/teste/frontend/src/contexts/auth-context.tsx) centraliza:
+
+- usuário atual
+- loading de sessão
+- login
+- logout
+
+### Fluxo
+
+1. ao montar, busca `/api/auth/me`
+2. se houver sessão válida, preenche `usuario`
+3. páginas protegidas usam esse estado
+
+### Benefício
+
+Evita que cada tela replique a lógica de sessão.
+
+---
+
+## Consumo de API
+
+O frontend consome a API de duas maneiras:
+
+### 1. Via URL absoluta do backend
+
+Exemplo:
+
+- `${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/stats`
+
+### 2. Via rewrite do Next
+
+O [next.config.js](/home/mestredoblack/teste/frontend/next.config.js) reescreve:
+
+- `/api/:path*` -> `http://localhost:3001/api/:path*`
+
+### Quando isso importa
+
+- área do conselho usa bastante o rewrite local
+- páginas do dashboard ainda usam bastante `NEXT_PUBLIC_API_URL`
+
+---
+
+## Componentização
+
+## Componentes de layout
+
+- [sidebar.tsx](/home/mestredoblack/teste/frontend/src/components/layout/sidebar.tsx)
+- [header.tsx](/home/mestredoblack/teste/frontend/src/components/layout/header.tsx)
+- [page-transition.tsx](/home/mestredoblack/teste/frontend/src/components/layout/page-transition.tsx)
+
+### Papel
+
+- navegação
+- consistência visual
+- shell da aplicação
+
+## Componentes de dashboard
+
+- [kpi-bar.tsx](/home/mestredoblack/teste/frontend/src/components/dashboard/kpi-bar.tsx)
+- [kpi-card.tsx](/home/mestredoblack/teste/frontend/src/components/dashboard/kpi-card.tsx)
+
+### Papel
+
+- materializar dados do dashboard em leitura rápida
+- reforçar valor logo na entrada do gestor
+
+## Componentes do mapa
+
+- [map-container.tsx](/home/mestredoblack/teste/frontend/src/components/map/map-container.tsx)
+- [map-legend.tsx](/home/mestredoblack/teste/frontend/src/components/map/map-legend.tsx)
+- layers:
+  - `base-layer`
+  - `iag-layer`
+  - `cozinhas-layer`
+  - `ppsan-layer`
+
+### Papel
+
+- traduzir os dados territoriais em visualização forte para banca
+
+## Componentes do conselho
+
+- `status-dashboard`
+- `seal-progress`
+- `meeting-card`
+- `meeting-timeline`
+- `recommendations`
+- `sisan-card`
+- `caisan-card`
+- `plano-card`
+
+### Papel
+
+- transformar governança municipal em linguagem visual
+
+## Componentes de UI
+
+Os componentes em `components/ui` são wrappers do HeroUI adaptados ao design tokens do projeto.
+
+Exemplos:
+
+- button
+- card
+- badge
+- input
+- dialog
+- skeleton
+- toast
+
+---
+
+## Design tokens e identidade visual
+
+O frontend usa dois pilares para identidade:
+
+- [globals.css](/home/mestredoblack/teste/frontend/src/app/globals.css)
+- [tailwind.config.ts](/home/mestredoblack/teste/frontend/tailwind.config.ts)
+
+### Direção visual
+
+- verde institucional para governo e segurança alimentar
+- vermelho de urgência para alertas e foco
+- fundo claro e painéis limpos
+- grid sutil para densidade visual
+
+### Fontes
+
+Hoje o layout usa variáveis CSS e fallback local, sem depender de `next/font/google`, o que reduz fragilidade em ambiente restrito.
+
+---
+
+## Como cada tela conversa com a API
+
+| Tela | Endpoint principal |
+|---|---|
+| `/dashboard` | `/api/dashboard/stats` |
+| `/ranking` | `/api/ranking` |
+| `/mapa` | `/api/mapa/geojson` |
+| `/alertas` | `/api/alertas` |
+| `/conselho` | `/api/conselhos/mine/stats` |
+| `/conselho/status` | `/api/conselhos/mine/status` |
+| `/conselho/membros` | `/api/conselhos/mine`, `/api/conselhos/:id/membros` |
+| `/conselho/reunioes` | `/api/conselhos/mine`, `/api/conselhos/:id/reunioes` |
+| `/conselho/documentos` | `/api/conselhos/mine/documentos` |
+
+---
+
+## Estratégia de UX para hackathon
+
+O frontend está organizado para causar impacto em três níveis:
+
+### 1. Entendimento instantâneo
+
+Quando o gestor entra, ele vê:
+
+- KPIs
+- rotas claras
+- páginas com nomenclatura institucional
+
+### 2. Prova visual
+
+O mapa, o ranking e os alertas mostram que existe inteligência e monitoramento.
+
+### 3. Prova operacional
+
+O portal do conselho mostra que existe uso real da ferramenta, não só dashboard.
+
+---
+
+## Pontos fortes do frontend
+
+- separação boa entre área estadual e área municipal
+- base visual institucional consistente
+- componentes específicos de domínio
+- mapa como peça de demonstração forte
+- middleware de proteção para orientar navegação
+
+---
+
+## Pontos a evoluir
+
+- consolidar a camada de consumo da API em um cliente único
+- reduzir mistura entre rewrite `/api` e URL absoluta
+- estabilizar completamente navegação e algumas telas em dev
+- adicionar testes E2E confiáveis para os fluxos críticos
+
+---
+
+## Mapa mental do frontend
+
+```mermaid
+mindmap
+  root((Frontend))
+    Acesso
+      home
+      login gestor
+      login conselho
+    Gestao estadual
+      dashboard
+      mapa
+      ranking
+      alertas
+      gestao
+      simulador
+    Portal conselho
+      status
+      membros
+      reunioes
+      documentos
+    Base tecnica
+      middleware
+      auth context
+      providers
+      design tokens
+      HeroUI
 ```
 
 ---
 
-## Páginas Principais
-
-### Dashboard (app/(dashboard)/page.tsx)
-
-```tsx
-export default function DashboardPage() {
-  return (
-    <div className="space-y-6">
-      {/* Mini mapa */}
-      <section className="bg-white rounded-lg p-4 h-96">
-        <h2 className="text-lg font-semibold mb-4">Mapa do RS</h2>
-        <MiniMap />
-      </section>
-
-      <div className="grid grid-cols-2 gap-6">
-        {/* Top 10 Ranking */}
-        <section className="bg-white rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-4">Top 10 Municípios</h2>
-          <TopRanking limit={10} />
-        </section>
-
-        {/* Alertas recentes */}
-        <section className="bg-white rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-4">Alertas Recentes</h2>
-          <RecentAlerts limit={5} />
-        </section>
-      </div>
-
-      {/* Simulador de Impacto */}
-      <section className="bg-white rounded-lg p-4">
-        <h2 className="text-lg font-semibold mb-4">Simulador de Impacto</h2>
-        <ImpactSimulator />
-      </section>
-    </div>
-  )
-}
-```
-
-### Mapa Interativo (app/(dashboard)/mapa/page.tsx)
-
-```tsx
-export default function MapaPage() {
-  return (
-    <div className="h-[calc(100vh-12rem)]">
-      <RSMap />
-    </div>
-  )
-}
-```
-
-### Ranking (app/(dashboard)/ranking/page.tsx)
-
-```tsx
-export default function RankingPage() {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Ranking de Municípios</h1>
-        <div className="flex gap-2">
-          <FilterDropdown field="regiao" />
-          <FilterDropdown field="status" />
-          <SearchInput placeholder="Buscar município..." />
-        </div>
-      </div>
-
-      <RankingTable />
-    </div>
-  )
-}
-```
-
-### Detalhe do Município (app/(dashboard)/municipios/[id]/page.tsx)
-
-```tsx
-export default async function MunicipioDetailPage({ params }) {
-  const municipio = await getMunicipio(params.id)
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <header>
-        <h1 className="text-2xl font-bold">{municipio.nome}</h1>
-        <p className="text-gray-600">
-          IBGE: {municipio.ibgeCode} | Região: {municipio.regiao}
-        </p>
-        <StatusBadge status={municipio.statusConselho} />
-      </header>
-
-      {/* Grid de informações */}
-      <div className="grid grid-cols-3 gap-4">
-        <ConselhoCard conselho={municipio.conselho} />
-        <RecursosCard recursos={municipio.recursos} />
-        <IndicadoresCard indicadores={municipio.indicadores} />
-      </div>
-
-      {/* Status governança */}
-      <GovernancaTabs
-        sisan={municipio.statusSisan}
-        caisan={municipio.statusCaisan}
-        plano={municipio.planoMunicipal}
-      />
-
-      {/* Histórico */}
-      <HistoricoReunioes reunioes={municipio.conselho.reunioes} />
-
-      {/* Selos */}
-      <SelosGrid selos={municipio.selos} />
-    </div>
-  )
-}
-```
-
-### Portal do Conselho (app/(conselho)/page.tsx)
-
-```tsx
-export default function ConselhoPage() {
-  const { conselho } = useConselho()
-
-  return (
-    <div className="space-y-6">
-      {/* Header do município */}
-      <header className="bg-white rounded-lg p-4">
-        <h1 className="text-2xl font-bold">{conselho.municipio.nome}</h1>
-        <StatusBadge status={conselho.status} />
-        <p>Índice Antifome: {conselho.indiceAntifome}/10</p>
-        <SealProgress atual={conselho.selos.atual} proximo={conselho.selos.proximo} />
-      </header>
-
-      {/* Ações rápidas */}
-      <div className="grid grid-cols-3 gap-4">
-        <Link href="/conselho/membros" className="card">
-          <Users size={24} />
-          <span>{conselho.totalMembros} Membros</span>
-        </Link>
-        <Link href="/conselho/reunioes" className="card">
-          <Calendar size={24} />
-          <span>{conselho.totalReunioes} Reuniões</span>
-        </Link>
-        <Link href="/conselho/atas" className="card">
-          <FileText size={24} />
-          <span>{conselho.totalAtas} Atas</span>
-        </Link>
-      </div>
-
-      {/* Próxima reunião */}
-      {conselho.proximaReuniao && (
-        <ProximaReuniao data={conselho.proximaReuniao} />
-      )}
-    </div>
-  )
-}
-```
-
----
-
-## Hooks
-
-### use-auth.ts
-
-```tsx
-'use client'
-
-import { createContext, useContext, useState, useEffect } from 'react'
-
-interface User {
-  id: string
-  email: string
-  perfil: 'GESTOR_ESTADUAL' | 'GESTOR_MUNICIPAL' | 'CONSELHEIRO' | 'SOCIEDADE_CIVIL'
-  municipioId?: string
-}
-
-interface AuthContext {
-  user: User | null
-  isLoading: boolean
-  login: (email: string, senha: string) => Promise<void>
-  logout: () => void
-  isAuthenticated: boolean
-}
-
-export function useAuth(): AuthContext {
-  // Implementation
-}
-```
-
-### use-dashboard-stats.ts
-
-```tsx
-'use client'
-
-import useSWR from 'swr'
-import { api } from '@/lib/api'
-
-interface DashboardStats {
-  conselhosAtivos: { total: number; porcentagem: number }
-  familiasEmRisco: { total: number; grauGrave: number }
-  orcamentoSAN: { total: number; executado: number; porcentagemExecucao: number }
-  alertas: { conselhosInativos: number; conselhosAtrasados: number }
-}
-
-export function useDashboardStats() {
-  const { data, error, isLoading } = useSWR<DashboardStats>(
-    '/api/dashboard/stats',
-    api.fetcher
-  )
-
-  return { data, error, isLoading }
-}
-```
-
----
-
-## Cliente API
-
-```tsx
-// lib/api.ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
-
-class ApiClient {
-  private getToken(): string | null {
-    return localStorage.getItem('token')
-  }
-
-  async fetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const token = this.getToken()
-
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options?.headers,
-      },
-    })
-
-    if (!response.ok) {
-      throw new ApiError(response.status, await response.json())
-    }
-
-    return response.json()
-  }
-
-  get<T>(endpoint: string) {
-    return this.fetch<T>(endpoint)
-  }
-
-  post<T>(endpoint: string, data: unknown) {
-    return this.fetch<T>(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-  }
-
-  put<T>(endpoint: string, data: unknown) {
-    return this.fetch<T>(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    })
-  }
-
-  delete<T>(endpoint: string) {
-    return this.fetch<T>(endpoint, { method: 'DELETE' })
-  }
-}
-
-export const api = new ApiClient()
-```
-
----
-
-## Design System
-
-### Cores Tailwind Customizadas
-
-| Classe | Cor | Uso |
-|--------|-----|-----|
-| `bg-petroleo` | #1A2F23 | Sidebar, header escuro |
-| `bg-urgencia` | #B71C1C | Botões ação, badges críticos |
-| `bg-sucesso` | #2E7D32 | Status ativo, sucesso |
-| `bg-aviso` | #FF8F00 | Status atrasado, avisos |
-
-### Status Badges
-
-| Status | Cor | Classe |
-|--------|-----|--------|
-| ATIVO | Verde | `bg-sucesso text-white` |
-| ATRASADO | Amarelo | `bg-aviso text-black` |
-| INATIVO | Vermelho | `bg-urgencia text-white` |
-
-### Tipografia
-
-```css
-/* headings */
-h1: text-3xl font-bold text-gray-900
-h2: text-2xl font-semibold text-gray-800
-h3: text-xl font-semibold text-gray-800
-
-/* body */
-p: text-base text-gray-700 leading-relaxed
-
-/* labels */
-label: text-sm font-medium text-gray-600 uppercase
-```
-
----
-
-## Roteamento
-
-| Rota | Página | Acesso |
-|------|--------|--------|
-| `/` | Dashboard principal | Autenticado (todos) |
-| `/login` | Tela login | Público |
-| `/mapa` | Mapa interativo | Autenticado |
-| `/ranking` | Ranking municípios | Autenticado |
-| `/alertas` | Alertas inatividade | Gestor estadual |
-| `/municipios/[id]` | Detalhe município | Autenticado |
-| `/gestao` | Gestão CONSEA | Autenticado |
-| `/documentos` | Repositório docs | Autenticado |
-| `/conselho` | Portal conselho | Conselheiro |
-| `/conselho/membros` | Gestão membros | Conselheiro |
-| `/conselho/reunioes` | Registro reuniões | Conselheiro |
-| `/simulador` | Simulador impacto | Gestor estadual |
-
----
-
-_Arquitetura do frontend criada por Aria (Architect) — 14/03/2026_
+## Referências principais
+
+- Root layout: [layout.tsx](/home/mestredoblack/teste/frontend/src/app/layout.tsx)
+- Middleware: [middleware.ts](/home/mestredoblack/teste/frontend/src/middleware.ts)
+- Auth context: [auth-context.tsx](/home/mestredoblack/teste/frontend/src/contexts/auth-context.tsx)
+- Sidebar: [sidebar.tsx](/home/mestredoblack/teste/frontend/src/components/layout/sidebar.tsx)
+- Header: [header.tsx](/home/mestredoblack/teste/frontend/src/components/layout/header.tsx)
+- Mapa: [map-container.tsx](/home/mestredoblack/teste/frontend/src/components/map/map-container.tsx)
